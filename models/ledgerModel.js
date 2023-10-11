@@ -91,5 +91,5 @@ const laonpendingschema=new mongoose.Schema({
         default:0
     }
 
-},{collection:'vw_ledger',versionKey:false});
+},{collection:'CUSTOMERCITYVIEW',versionKey:false});
 module.exports=mongoose.model('Ledger',laonpendingschema);
