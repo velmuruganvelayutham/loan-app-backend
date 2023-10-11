@@ -3,7 +3,7 @@ require("dotenv").config()
 const routes=require("./routes/customerroute")
 const routescity=require("./routes/citynameroute")
 const routeslineman=require("./routes/linemanroute")
-
+const routesledger=require("./routes/ledgerroute")
 const cors=require("cors")
 
 const app=express()
@@ -39,6 +39,7 @@ db.once('open',()=>console.log('connected'))
 app.use(routes);
 app.use(routescity);
 app.use(routeslineman);
+app.use(routesledger);
 //app.use('/city',routescity)
 /*const fs = require('fs');
 const routes_directory = require('path').resolve(__dirname) + '\\routes\\'; 
