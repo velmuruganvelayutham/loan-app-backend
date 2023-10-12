@@ -29,12 +29,10 @@ const laonpendingschema=new mongoose.Schema({
     },
     _id:mongoose.Schema.Types.ObjectId,
     customer_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        default:""
+        type:mongoose.Schema.Types.ObjectId
     },
     lineman_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        default:""
+        type:mongoose.Schema.Types.ObjectId
     },
     weekno:{
         type:Number
@@ -67,36 +65,28 @@ const laonpendingschema=new mongoose.Schema({
         type:Number
     },
      customer:{
-        type:String,
-        default:""
+        type:String
     },
     city:{
-        type:mongoose.Schema.Types.ObjectId,
-        default:""
+        type:mongoose.Schema.Types.ObjectId
     },
     cityid:{
-        type:String,
-        default:""
+        type:String
     },
     fathername:{
-        type:String,
-        default:""
+        type:String
     },
     work:{
-        type:String,
-        default:""
+        type:String
     },
     address:{
-        type:String,
-        default:""
+        type:String
     },
     mobileno:{
-        type:String,
-        default:""
+        type:String
     },
     lineno:{
-        type:String,
-        default:""
+        type:String
     }
 
 },{collection:'vw_ledger',versionKey:false});
