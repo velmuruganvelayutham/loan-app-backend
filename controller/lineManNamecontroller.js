@@ -2,6 +2,7 @@ const lineManNameModel = require("../models/lineManNamemodel")
 const loanModel = require("../models/loanModel")
 const lineModel=require("../models/lineModel")
 const receiptModel = require("../models/receiptModel")
+const LedgerModel=require("../models/ledgerModel");
 //all lineman
 module.exports.getLineManNames=async(req,res)=>{
     const cityNames=await lineManNameModel.find()
@@ -201,4 +202,9 @@ module.exports.getLineNames=async(req,res)=>{
   
   const lineNames=await lineModel.find()
   res.send(lineNames)
+}
+///all ledger
+module.exports.getLeger=async(req,res)=>{
+  const ledger=await LedgerModel.find()
+  res.send(ledger)
 }
