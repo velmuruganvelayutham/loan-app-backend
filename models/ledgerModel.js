@@ -1,16 +1,18 @@
 const mongoose=require("mongoose")
 const laonpendingschema=new mongoose.Schema({
-    _id:mongoose.Schema.Types.ObjectId,
+    customer:{
+        type:String
+    },
     loannumber:{
         type:Number
     },
-    customer_id:{
-        type:mongoose.Schema.Types.ObjectId
+    dueamount:{
+        type:Number
     },
-    lineman_id:{
-        type:mongoose.Schema.Types.ObjectId
+    paidamount:{
+        type:Number
     },
-    weekcount:{
+    totalamount:{
         type:Number
     },
     startdate:{
@@ -18,6 +20,36 @@ const laonpendingschema=new mongoose.Schema({
     },
     givendate:{
         type:Date
+    },
+    receipdate:{
+        type:Date
+    },
+    collectedamount:{
+        type:Number
+    },
+    _id:mongoose.Schema.Types.ObjectId,
+    customer_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        default:""
+    },
+    lineman_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        default:""
+    },
+    weekno:{
+        type:Number
+    },
+    bookno:{
+        type:Number
+    },
+    document:{
+        type:String
+    },
+    cheque:{
+        type:String
+    },
+    weekcount:{
+        type:Number
     },
     duedate:{
         type:Date
@@ -34,15 +66,6 @@ const laonpendingschema=new mongoose.Schema({
     interestamount:{
         type:Number
     },
-    totalamount:{
-        type:Number
-    },
-    dueamount:{
-        type:Number
-    },
-     paidamount:{
-        type:Number
-     },
      customer:{
         type:String,
         default:""
@@ -51,11 +74,7 @@ const laonpendingschema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         default:""
     },
-    address:{
-        type:String,
-        default:""
-    },
-    work:{
+    cityid:{
         type:String,
         default:""
     },
@@ -63,14 +82,22 @@ const laonpendingschema=new mongoose.Schema({
         type:String,
         default:""
     },
+    work:{
+        type:String,
+        default:""
+    },
+    address:{
+        type:String,
+        default:""
+    },
     mobileno:{
         type:String,
         default:""
     },
-    relationtype:{
-        type:Number,
-        default:0
+    lineno:{
+        type:String,
+        default:""
     }
 
-},{collection:'vw_loancustomerdetails',versionKey:false});
-module.exports=mongoose.model('LoanPending',laonpendingschema);
+},{collection:'vw_ledger',versionKey:false});
+module.exports=mongoose.model('Ledger',laonpendingschema);
