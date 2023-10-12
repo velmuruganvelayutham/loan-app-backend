@@ -1,6 +1,5 @@
 const mongoose=require("mongoose")
 const laonpendingschema=new mongoose.Schema({
-    
     customer:{
         type:String
     },
@@ -30,10 +29,24 @@ const laonpendingschema=new mongoose.Schema({
     },
     _id:mongoose.Schema.Types.ObjectId,
     customer_id:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        default:""
     },
     lineman_id:{
-        type:mongoose.Schema.Types.ObjectId
+        type:mongoose.Schema.Types.ObjectId,
+        default:""
+    },
+    weekno:{
+        type:Number
+    },
+    bookno:{
+        type:Number
+    },
+    document:{
+        type:String
+    },
+    cheque:{
+        type:String
     },
     weekcount:{
         type:Number
@@ -53,15 +66,6 @@ const laonpendingschema=new mongoose.Schema({
     interestamount:{
         type:Number
     },
-    totalamount:{
-        type:Number
-    },
-    dueamount:{
-        type:Number
-    },
-     paidamount:{
-        type:Number
-     },
      customer:{
         type:String,
         default:""
@@ -70,11 +74,7 @@ const laonpendingschema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         default:""
     },
-    address:{
-        type:String,
-        default:""
-    },
-    work:{
+    cityid:{
         type:String,
         default:""
     },
@@ -82,13 +82,21 @@ const laonpendingschema=new mongoose.Schema({
         type:String,
         default:""
     },
+    work:{
+        type:String,
+        default:""
+    },
+    address:{
+        type:String,
+        default:""
+    },
     mobileno:{
         type:String,
         default:""
     },
-    relationtype:{
-        type:Number,
-        default:0
+    lineno:{
+        type:String,
+        default:""
     }
 
 },{collection:'vw_ledger',versionKey:false});
