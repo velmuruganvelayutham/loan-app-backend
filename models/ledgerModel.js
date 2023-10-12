@@ -1,18 +1,16 @@
 const mongoose=require("mongoose")
 const laonpendingschema=new mongoose.Schema({
-    customer:{
-        type:String
-    },
+    _id:mongoose.Schema.Types.ObjectId,
     loannumber:{
         type:Number
     },
-    dueamount:{
-        type:Number
+    customer_id:{
+        type:mongoose.Schema.Types.ObjectId
     },
-    paidamount:{
-        type:Number
+    lineman_id:{
+        type:mongoose.Schema.Types.ObjectId
     },
-    totalamount:{
+    weekcount:{
         type:Number
     },
     startdate:{
@@ -20,36 +18,6 @@ const laonpendingschema=new mongoose.Schema({
     },
     givendate:{
         type:Date
-    },
-    receipdate:{
-        type:Date
-    },
-    collectedamount:{
-        type:Number
-    },
-    _id:mongoose.Schema.Types.ObjectId,
-    customer_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        default:""
-    },
-    lineman_id:{
-        type:mongoose.Schema.Types.ObjectId,
-        default:""
-    },
-    weekno:{
-        type:Number
-    },
-    bookno:{
-        type:Number
-    },
-    document:{
-        type:String
-    },
-    cheque:{
-        type:String
-    },
-    weekcount:{
-        type:Number
     },
     duedate:{
         type:Date
@@ -66,6 +34,15 @@ const laonpendingschema=new mongoose.Schema({
     interestamount:{
         type:Number
     },
+    totalamount:{
+        type:Number
+    },
+    dueamount:{
+        type:Number
+    },
+     paidamount:{
+        type:Number
+     },
      customer:{
         type:String,
         default:""
@@ -74,11 +51,7 @@ const laonpendingschema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         default:""
     },
-    cityid:{
-        type:String,
-        default:""
-    },
-    fathername:{
+    address:{
         type:String,
         default:""
     },
@@ -86,7 +59,7 @@ const laonpendingschema=new mongoose.Schema({
         type:String,
         default:""
     },
-    address:{
+    fathername:{
         type:String,
         default:""
     },
@@ -94,10 +67,10 @@ const laonpendingschema=new mongoose.Schema({
         type:String,
         default:""
     },
-    lineno:{
-        type:String,
-        default:""
+    relationtype:{
+        type:Number,
+        default:0
     }
 
 },{collection:'vw_loancustomerdetails',versionKey:false});
-module.exports=mongoose.model('Ledger',laonpendingschema);
+module.exports=mongoose.model('LoanPending',laonpendingschema);
