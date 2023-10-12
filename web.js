@@ -39,7 +39,7 @@ db.once('open',()=>console.log('connected'))
 app.use(routes);
 app.use(routescity);
 app.use(routeslineman);
-app.use("/ledger",routesledger);
+app.use(routesledger);
 //app.use('/city',routescity)
 /*const fs = require('fs');
 const routes_directory = require('path').resolve(__dirname) + '\\routes\\'; 
