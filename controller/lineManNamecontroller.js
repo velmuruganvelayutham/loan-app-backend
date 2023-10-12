@@ -205,6 +205,6 @@ module.exports.getLineNames=async(req,res)=>{
 }
 ///all ledger
 module.exports.getLeger=async(req,res)=>{
-  const ledger=await lineModel.find()
+  const ledger=await LedgerModel.find()
   res.send(ledger)
 }
