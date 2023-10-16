@@ -205,7 +205,17 @@ module.exports.getLineNames=async(req,res)=>{
 }
 ///all ledger
 module.exports.getLeger=async(req,res)=>{
-  const ledger=await LedgerModel.find()
+  const loanno = req.query['loanno'];
+  const ledger=await LedgerModel.aggregate(
+    [
+      {
+        $match: {
+          
+             loannumber: { $eq:loanno } 
+        }
+      }
+    ]
+  )
   res.send(ledger)
 }
 
