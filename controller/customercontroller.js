@@ -2,6 +2,7 @@ const customerModel = require("../models/customerModel")
 const receiptModel = require("../models/receiptModel")
 const loanModel = require("../models/loanModel");
 const pendingloanModel = require("../models/loanPendingModelView");
+const loanPendingModelView = require("../models/loanPendingModelView");
 //all Customers
 module.exports.getCustomers = async (req, res) => {
   const customers = await customerModel.find()
@@ -81,18 +82,18 @@ module.exports.updateCustomer = (req, res) => {
 //Delete customer
 module.exports.deleteCustomer = (req, res) => {
   const { id } = req.params
-  const custres = loanModel.findById(id)
+  /*const custres = loanModel.findById(id)
     .then((res.send(custres)))
     .catch((err) => {
       console.log(err);
       res.send({ error: err, msg: "somthing went wrong" })
-    })
-  /*customerModel.findByIdAndDelete(id)
+    })*/
+  customerModel.findByIdAndDelete(id)
   .then(()=> res.send("Deleted Successfully"))
   .catch((err)=>{
       console.log(err);
       res.send({error:err,msg:"somthing went wrong"})
-  })*/
+  })
 }
 
 //Receipt Section
@@ -211,5 +212,11 @@ module.exports.saveReceipt = (req, res) => {
       console.log(err);
       res.send({ error: err, msg: "somthing went wrong" })
     })
+}
+
+///All Loan//
+module.exports.getLoanDetails=async(req,res)=>{
+  const loan=await loanPendingModelView.find()
+  res.send(loan);
 }
 
