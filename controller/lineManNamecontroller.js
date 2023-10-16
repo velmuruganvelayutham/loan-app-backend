@@ -211,7 +211,7 @@ module.exports.getLeger=async(req,res)=>{
       {
         $match: {
           
-             loannumber: { $eq:loanno } 
+             "loannumber": { $eq:1 } 
         }
       }
     ]
