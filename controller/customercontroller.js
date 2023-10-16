@@ -79,12 +79,14 @@ module.exports.updateCustomer=(req,res)=>{
 //Delete customer
 module.exports.deleteCustomer=(req,res)=>{
     const {id}=req.params
-    customerModel.findByIdAndDelete(id)
+   const custres= loanModel.findById(id)
+   res.send(custres);
+    /*customerModel.findByIdAndDelete(id)
     .then(()=> res.send("Deleted Successfully"))
     .catch((err)=>{
         console.log(err);
         res.send({error:err,msg:"somthing went wrong"})
-    })
+    })*/
 }
 
 //Receipt Section
@@ -204,23 +206,4 @@ receiptModel.create(items)
 })
 }
 
- /*module.exports.saveReceipt=async(req,res)=>{
-  
-    let items=  req.body.map(item=>{
-    return{
-      receiptnumber:1,
-      loannumber:4
-      receiptnumber:1,
-      receiptdate:Date.now,
-      customer_id:item.loannumber,
-      loannumber:item.loannumber,
-      weekno:item.weak,
-      collectedamount:item.amount
-    }
-
-  })
-  
-    const customers=await customerModel.find()
-    res.send(customers)
-  
- }*/
+ 
