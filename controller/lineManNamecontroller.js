@@ -3,6 +3,8 @@ const loanModel = require("../models/loanModel")
 const lineModel=require("../models/lineModel")
 const receiptModel = require("../models/receiptModel")
 const LedgerModel=require("../models/ledgerModel");
+const LineCheckingModel = require("../models/lineCheckingModel");
+
 //all lineman
 module.exports.getLineManNames=async(req,res)=>{
     const cityNames=await lineManNameModel.find()
@@ -204,7 +206,7 @@ module.exports.getLineNames=async(req,res)=>{
   res.send(lineNames)
 }
 ///all ledger
-module.exports.getLeger=async(req,res)=>{
+module.exports.getLedger=async(req,res)=>{
   const loanno = req.query['loanno'];
   const ledger=await LedgerModel.aggregate(
     [
@@ -219,3 +221,15 @@ module.exports.getLeger=async(req,res)=>{
   res.send(ledger)
 }
 
+///line checking details//
+module.exports.getCheckingDetails=async(req,res)=>{
+  const cityid=req.query['city_id'];
+  const checking=await LineCheckingModel.aggregate([
+    {
+      $match:{
+        'cityid':{$eq:cityid}
+      }
+    }
+  ])
+  res.send(checking)
+}
