@@ -233,3 +233,8 @@ module.exports.getCheckingDetails=async(req,res)=>{
   ])
   res.send(checking)
 }
+//all loan
+module.exports.getLoannumbers=async(req,res)=>{
+  const loannumbers=await loanModel.find()
+  res.send(loannumbers)
+}
