@@ -225,23 +225,69 @@ module.exports.getLedger = async (req, res) => {
 module.exports.getCheckingDetails = async (req, res) => {
   const cityid = req.query['city_id'];
   const checking = await pendingloanModel.aggregate([
-    [
       {
         '$lookup': {
           'from': 'receipttables', 
+          'let': {
+            'loannumber': '$loannumber'
+          }, 
           'pipeline': [
             {
               '$match': {
-                'receiptdate': {
-                  '$gte': new Date('Tue, 10 Oct 2023 00:00:00 GMT'), 
-                  '$lte': new Date('Mon, 30 Oct 2023 00:00:00 GMT')
+                '$expr': {
+                  '$eq': [
+                    '$loannumber', '$$loannumber'
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$loannumber', 
+                'collected': {
+                  '$sum': '$collectedamount'
                 }
               }
             }
           ], 
-          'localField': 'loannumber', 
-          'foreignField': 'loannumber', 
           'as': 'joined'
+        }
+      }, {
+        '$lookup': {
+          'from': 'receipttables', 
+          'let': {
+            'loannumber': '$loannumber'
+          }, 
+          'pipeline': [
+            {
+              '$match': {
+                '$expr': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$loannumber', '$$loannumber'
+                      ]
+                    }, {
+                      '$gt': [
+                        '$receiptdate', new Date('Mon, 09 Oct 2023 00:00:00 GMT')
+                      ]
+                    }, {
+                      '$lte': [
+                        '$receiptdate', new Date('Mon, 30 Oct 2023 00:00:00 GMT')
+                      ]
+                    }
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$loannumber', 
+                'collected': {
+                  '$sum': '$collectedamount'
+                }
+              }
+            }
+          ], 
+          'as': 'receipt'
         }
       }, {
         '$unwind': {
@@ -250,32 +296,16 @@ module.exports.getCheckingDetails = async (req, res) => {
           'preserveNullAndEmptyArrays': true
         }
       }, {
-        '$group': {
-          '_id': {
-            'loannumber': '$loannumber', 
-            'startdate': '$startdate', 
-            'finisheddate': '$finisheddate', 
-            'bookno': '$bookno', 
-            'lineno': '$lineno', 
-            'customer_id': '$customer_id', 
-            'totalamount': '$totalamount', 
-            'customer': '$customer', 
-            'dueamount': '$dueamount', 
-            'city': '$city', 
-            'cityid': '$cityid', 
-            'fathername': '$fathername', 
-            'work': '$work', 
-            'address': '$address', 
-            'mobileno': '$mobileno', 
-            'relationtype': '$relationtype'
-          }, 
-          'collected': {
-            '$sum': '$joined.collectedamount'
-          }
+        '$unwind': {
+          'path': '$receipt', 
+          'includeArrayIndex': 'string', 
+          'preserveNullAndEmptyArrays': true
         }
       }, {
         '$project': {
           'loannumber': 1, 
+          'startdate': 1, 
+          'finisheddate': 1, 
           'addFields': {
             'daysCount': {
               '$round': {
@@ -287,37 +317,36 @@ module.exports.getCheckingDetails = async (req, res) => {
                   }, 86400000 * 7
                 ]
               }
+            }, 
+            'daysCountloan': {
+              '$round': {
+                '$divide': [
+                  {
+                    '$subtract': [
+                      new Date('Mon, 30 Oct 2023 00:00:00 GMT'), '$finisheddate'
+                    ]
+                  }, 86400000 * 7
+                ]
+              }
             }
           }, 
+          'lineman_id': 1, 
+          'linemanname': 1, 
           'customer_id': 1, 
           'customer': 1, 
           'totalamount': 1, 
           'dueamount': 1, 
           'city': 1, 
-          'collected': 1, 
+          'collectedamountdate': '$receipt.collected', 
           'cityid': 1, 
           'fathername': 1, 
           'work': 1, 
           'address': 1, 
           'mobileno': 1, 
-          'relationtype': 1
-        }
-      }, {
-        '$replaceRoot': {
-          'newRoot': {
-            '$mergeObjects': [
-              {
-                'customer': '', 
-                'loannumber': '$_id.loannumber', 
-                'totalamount': '$_id.totalamount', 
-                'city': '$_id.city', 
-                'cityid': '$_id.cityid'
-              }, '$$ROOT'
-            ]
-          }
+          'relationtype': 1, 
+          'collectedtotal': '$joined.collected'
         }
       }
-    ]
   ])
 
 
