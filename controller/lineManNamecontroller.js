@@ -339,14 +339,14 @@ module.exports.getCheckingDetails = async (req, res) => {
           'totalamount': 1, 
           'dueamount': 1, 
           'city': 1, 
-          'collectedamountdate': '$receipt.collected', 
+          'collectedamountdate': {$ifNull:["$receipt.collected",0]}, 
           'cityid': 1, 
           'fathername': 1, 
           'work': 1, 
           'address': 1, 
           'mobileno': 1, 
           'relationtype': 1, 
-          'collectedtotal': '$joined.collected',
+          'collectedtotal':{$ifNull:["$joined.collected",0]} ,
           'weekcount':1
         }
       },
