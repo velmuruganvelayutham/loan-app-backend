@@ -268,11 +268,11 @@ module.exports.getCheckingDetails = async (req, res) => {
                       ]
                     }, {
                       '$gt': [
-                        '$receiptdate', new Date('Mon, 09 Oct 2023 00:00:00 GMT')
+                        '$receiptdate', new Date(req.query['fromdate'])
                       ]
                     }, {
                       '$lte': [
-                        '$receiptdate', new Date('Mon, 30 Oct 2023 00:00:00 GMT')
+                        '$receiptdate', new Date(req.query['todate'])
                       ]
                     }
                   ]
@@ -312,7 +312,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                 '$divide': [
                   {
                     '$subtract': [
-                      new Date('Mon, 30 Oct 2023 00:00:00 GMT'), new Date('Tue, 10 Oct 2023 00:00:00 GMT')
+                      new Date(req.query['todate']), new Date(req.query['fromdate'])
                     ]
                   }, 86400000 * 7
                 ]
@@ -323,7 +323,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                 '$divide': [
                   {
                     '$subtract': [
-                      new Date('Mon, 30 Oct 2023 00:00:00 GMT'), '$finisheddate'
+                      new Date(req.query['todate']), '$finisheddate'
                     ]
                   }, 86400000 * 7
                 ]
@@ -332,6 +332,8 @@ module.exports.getCheckingDetails = async (req, res) => {
           }, 
           'lineman_id': 1, 
           'linemanname': 1, 
+          'lineno':1,
+          'bookno':1,
           'customer_id': 1, 
           'customer': 1, 
           'totalamount': 1, 
@@ -344,7 +346,13 @@ module.exports.getCheckingDetails = async (req, res) => {
           'address': 1, 
           'mobileno': 1, 
           'relationtype': 1, 
-          'collectedtotal': '$joined.collected'
+          'collectedtotal': '$joined.collected',
+          'weekcount':1
+        }
+      },
+      {
+        $match:{
+          'cityid':{$eq:cityid}
         }
       }
   ])
