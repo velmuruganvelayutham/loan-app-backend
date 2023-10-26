@@ -369,6 +369,7 @@ module.exports.getCheckingDetails = async (req, res) => {
 }
 //all loan
 module.exports.getLoannumbers = async (req, res) => {
-  const loannumbers = await loanModel.find()
+  const cityid = req.query['city_id'];
+  const loannumbers = await pendingloanModel.find({'cityid':{$eq:cityid}})
   res.send(loannumbers)
 }
