@@ -19,6 +19,11 @@ const loanSchema=new mongoose.Schema({
         required:true,
         ref:'lineManNamemodel'
     },
+    city_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        required:true,
+        ref:'cityNameModel'
+    },
     weekno:{
         type:Number,
         required:false
