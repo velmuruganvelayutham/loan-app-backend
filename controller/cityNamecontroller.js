@@ -41,7 +41,7 @@ module.exports.saveCityNames=(req,res)=>{
 }
 //update City
 module.exports.updateCityNames=(req,res)=>{
-    const {id}=req.params
+  const { id } = req.params 
     cityNameModel.findByIdAndUpdate(id,{cityname:req.body.cityname,citylineno:req.body.citylineno})
     .then(()=> res.send("Updated Successfully"))
     .catch((err)=>{
