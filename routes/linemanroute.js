@@ -4,8 +4,8 @@ const{getLineManNames,deleteLineManNames,updateLineManNames,saveLineManNames,get
     getMaxLoanCode,saveLoan,getLineNames,getOldLoanRef,getLedger,getCheckingDetails,getLoannumbers}=require("../controller/lineManNamecontroller");
 router.get("/linemancreate/get",getLineManNames);
 router.post("/linemancreate/save",saveLineManNames);
-router.put("/linemancreate/update/:linemancode",updateLineManNames);
-router.delete("/linemancreate/delete/:linemancode",deleteLineManNames)
+router.put("/linemancreate/update/:id",updateLineManNames);
+router.delete("/linemancreate/delete/:id",deleteLineManNames)
 router.get("/linemancreate/get/max",getMaxLineManCode);
 //loan section//
 router.get("/loancreate/get/max",getMaxLoanCode);

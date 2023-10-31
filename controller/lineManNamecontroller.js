@@ -11,7 +11,7 @@ module.exports.getLineManNames = async (req, res) => {
   res.send(cityNames)
 }
 //get linemanmaxcode
-module.exports.getMaxLineManCode = async (req, res) => {
+/*module.exports.getMaxLineManCode = async (req, res) => {
   const maxcode = await lineManNameModel.aggregate([
     {
       "$group": {
@@ -27,14 +27,13 @@ module.exports.getMaxLineManCode = async (req, res) => {
     },
   ]);
   res.send(maxcode)
-}
+}*/
 
 
 
 //create lineman
 module.exports.saveLineManNames = (req, res) => {
   const linemannamesdetails = new lineManNameModel({
-    linemancode: req.body.linemancode,
     linemanname: req.body.linemanname,
     mobileno: req.body.mobileno
   })
@@ -50,8 +49,8 @@ module.exports.saveLineManNames = (req, res) => {
 }
 //update lineman
 module.exports.updateLineManNames = (req, res) => {
-  const { linemancode } = req.params
-  lineManNameModel.findByIdAndUpdate(linemancode, { linemanname: req.body.linemanname, mobileno: req.body.mobileno })
+  const { id } = req.params
+  lineManNameModel.findByIdAndUpdate(id, { linemanname: req.body.linemanname, mobileno: req.body.mobileno })
     .then(() => res.send("Updated Successfully"))
     .catch((err) => {
       console.log(err);
