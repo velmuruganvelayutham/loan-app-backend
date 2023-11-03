@@ -5,7 +5,8 @@ const cityNameSchema=new mongoose.Schema({
         required:true
     },
     citylineno:{
-        type:String
+        type:Number,
+        required:true
     }
 
 })

@@ -2,7 +2,31 @@ const cityNameModel = require("../models/cityNameModel")
 
 //all city
 module.exports.getCityNames=async(req,res)=>{
-    const cityNames=await cityNameModel.find()
+    const cityNames=await cityNameModel.aggregate(
+      [
+        {
+          '$lookup': {
+            'from': 'linetables', 
+            'localField': 'citylineno', 
+            'foreignField': 'lineno', 
+            'as': 'joined'
+          }
+        }, {
+          '$unwind': {
+            'path': '$joined', 
+            'includeArrayIndex': 'string', 
+            'preserveNullAndEmptyArrays': true
+          }
+        }, {
+          '$project': {
+            '_id': 1, 
+            'cityname': 1, 
+            'citylineno': 1, 
+            'linename': '$joined.linename'
+          }
+        }
+      ]
+    )
     res.send(cityNames)
 }
 
