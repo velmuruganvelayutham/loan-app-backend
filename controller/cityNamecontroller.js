@@ -364,14 +364,12 @@ module.exports.totalLedger = async (req, res) => {
         '$group': {
           '_id': {
             'lineno': '$lineno',
-            'lineman_id': '$lineman_id',
-            'totalamountbefore': '$totalamountbefore',
-            'countbefore': '$countbefore'
+            'lineman_id': '$lineman_id'
           },
           'totalamountbefore':
             { '$sum': "$totalamountbefore" },
           'countbefore': { '$sum': "$countbefore" },
-          
+
           'pendingbefore': {
             '$sum': '$pendingamountbefore'
           },
