@@ -421,7 +421,7 @@ module.exports.totalLedger=async(req,res)=>{
         'lineman_id': 1, 
         'totalamountbefore': 1, 
         'countbefore': 1, 
-        'totalamountafter': 1, 
+        'totalafter': 1, 
         'countafter': 1, 
         'pendingbefore': 1, 
         'pendingafter': 1, 
