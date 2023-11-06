@@ -268,7 +268,105 @@ module.exports.totalLedger = async (req, res) => {
           'includeArrayIndex': 'string',
           'preserveNullAndEmptyArrays': true
         }
-      }, {
+      }, 
+      {
+        '$lookup': {
+          'from': 'receipttables',
+          'let': {
+            'loannumber': '$loannumber',
+            'dueamount':'$dueamount'
+          },
+          'pipeline': [
+            {
+              '$match': {
+                '$expr': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$loannumber', '$$loannumber',
+                      ]
+                    }, {
+                      '$lte': [
+                        '$receiptdate', new Date(req.query['todate'])
+                      ]
+                    }, {
+                      '$gt': [
+                        '$receiptdate', new Date(req.query['fromdate'])
+                      ]
+                    },
+                    {
+                      '$gt':['$collectedamount',"$$dueamount"]
+                    }
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$loannumber',
+                'collectedless': {
+                  '$sum': '$collectedamount'
+                }
+              }
+            }
+          ],
+          'as': 'receiptless'
+        }
+      },
+
+      {
+        '$unwind': {
+          'path': '$receiptless',
+          'includeArrayIndex': 'string',
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'receipttables',
+          'let': {
+            'loannumber': '$loannumber'
+          },
+          'pipeline': [
+            {
+              '$match': {
+                '$expr': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$loannumber', '$$loannumber',
+                      ]
+                    }, {
+                      '$lte': [
+                        '$receiptdate', new Date(req.query['todate'])
+                      ]
+                    }, {
+                      '$gt': [
+                        '$receiptdate', new Date(req.query['fromdate'])
+                      ]
+                    }
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$loannumber',
+                'collectedmore': {
+                  '$sum': 0
+                }
+              }
+            }
+          ],
+          'as': 'receiptmore'
+        }
+      },
+      {
+        '$unwind': {
+          'path': '$receiptmore',
+          'includeArrayIndex': 'string',
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
         '$project': {
           'loannumber': 1,
           'lineman_id': 1,
@@ -290,6 +388,10 @@ module.exports.totalLedger = async (req, res) => {
               '$receiptbetween.collectedbetween', 0
             ]
           },
+          'collectedless':{'$ifNull': [
+            '$receiptless.collectedless', 0
+          ]},
+          'collectedmore':{'$ifNull':["$receiptmore.collectedmore","$dueamount"]},
           'weekcount': 1,
           'addFields': {
             'daysCount': {
@@ -321,6 +423,21 @@ module.exports.totalLedger = async (req, res) => {
                   }
                 }, 1
               ]
+            },
+            'daysCountbetween': {
+              '$add': [
+                {
+                  '$round': {
+                    '$divide': [
+                      {
+                        '$subtract': [
+                          new Date(req.query['todate']), new Date(req.query['fromdate'])
+                        ]
+                      }, 86400000 * 7
+                    ]
+                  }
+                }, 
+              ]
             }
           },
           'totalamountbefore': {
@@ -338,6 +455,10 @@ module.exports.totalLedger = async (req, res) => {
           'totalamount': 1,
           'dueamount': 1,
           'collectedamountbetween': 1,
+          'collectedless':1,
+          'collectedmore':{'$multiply': [
+            '$collectedless', '$addFields.daysCountbetween'
+          ]},
           'totalamountbefore': 1,
           'countbefore': 1,
           'pendingamountbefore': {
@@ -382,9 +503,16 @@ module.exports.totalLedger = async (req, res) => {
           'collectedbetween': {
             '$sum': '$collectedamountbetween'
           },
+          'collectedless': {
+            '$sum': '$collectedless'
+          },
+          'collectedmore':{
+            '$sum':'$collectedmore'
+          },
           'countafter': {
             '$sum': 1
           }
+
         }
       }, {
         '$replaceRoot': {
@@ -436,6 +564,8 @@ module.exports.totalLedger = async (req, res) => {
           'pendingbefore': 1,
           'pendingafter': 1,
           'collectedbetween': 1,
+          'collectedless':1,
+          'collectedmore':1,
           'linename': '$linesub.linename',
           'linemanname': '$linemansub.linemanname'
         }
