@@ -88,8 +88,8 @@ module.exports.deleteCityNames=(req,res)=>{
 
 
 //Total Ledger Report//
-module.exports.totalLedger=(req,res)=>{
- const Ledger=loanModel.aggregate(
+module.exports.totalLedger=async(req,res)=>{
+ const Ledger=await loanModel.aggregate(
   [
     {
       '$lookup': {
