@@ -95,7 +95,8 @@ module.exports.totalLedger=async(req,res)=>{
       '$lookup': {
         'from': 'loantables', 
         'let': {
-          'lineno': '$lineno'
+          'lineno': '$lineno',
+          'loannumber':'$loannumber'
         }, 
         'pipeline': [
           {
@@ -106,7 +107,13 @@ module.exports.totalLedger=async(req,res)=>{
                     '$eq': [
                       '$lineno', '$$lineno'
                     ]
-                  }, {
+                  },
+                  {
+                    '$eq': [
+                      '$loannumber', '$$loannumber'
+                    ]
+                  },
+                   {
                     '$lte': [
                       '$startdate', new Date(req.query['fromdate'])
                     ]
