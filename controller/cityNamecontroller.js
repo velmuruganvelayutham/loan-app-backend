@@ -280,7 +280,7 @@ module.exports.totalLedger=async(req,res)=>{
         }, 
         'collectedamountbetween': {
           '$ifNull': [
-            '$receiptbetween.collectedamountbetween', 0
+            '$receiptbetween.collectedbetween', 0
           ]
         }, 
         'weekcount': 1, 
