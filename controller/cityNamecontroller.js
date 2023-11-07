@@ -566,7 +566,19 @@ module.exports.totalLedger = async (req, res) => {
           'countbefore': '$loansub.countbefore',
           //Not running--//
           'daysCountnotrunning': '$notrunningloan.daysCountnotrunning',
-          'receiptpendingweek':"4",
+          'receiptpendingweek': {
+            '$subtract': [
+              '$notrunningloan.daysCountnotrunning', {
+                '$divide': [
+                  {
+                    '$ifNull': [
+                      '$notreceipt.collectedamount', 0
+                    ]
+                  }, '$dueamount'
+                ]
+              }
+            ]
+          },
           'notrunningloan': {
             '$ifNull': [
               '$notrunningloan.totalamountloan', 0
@@ -615,7 +627,14 @@ module.exports.totalLedger = async (req, res) => {
                 ]
               }, '$collectedamountafter'
             ]
-          }
+          },
+          //not running//
+          'notrunningloancount':{
+            '$cond': { 'if': { '$gte': [ "$receiptpendingweek", 4 ] }, 'then':"$notrunningcount", 'else': 0 }
+           },
+           'notrunningloanpending':{
+            '$cond': { 'if': { '$gte': [ "$receiptpendingweek", 4 ] }, 'then':{'$subtract':["$notrunningloan","$notreceiptcollected"]}, 'else': 0 }
+           }
         }
       }, {
         '$group': {
@@ -650,12 +669,12 @@ module.exports.totalLedger = async (req, res) => {
           },
           //not running---//
           'notrunningloancount':{
-            '$sum':{'$cond': { 'if': { '$gte': [ "$receiptpendingweek", 4 ] }, 'then':"$notrunningcount", 'else': 0 }}
-           },
-           'notrunningloanpending':{
-            '$sum':{ '$cond': { 'if': { '$gte': [ "$receiptpendingweek", 4 ] }, 'then':{'$subtract':["$notrunningloan","$notreceiptcollected"]}, 'else': 0 }}
-           }
-
+            '$sum':1
+          },
+          
+          'notrunningloanpending':{
+            '$sum':'$notrunningloanpending'
+          }
         }
       }, {
         '$replaceRoot': {
