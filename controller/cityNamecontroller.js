@@ -669,7 +669,7 @@ module.exports.totalLedger = async (req, res) => {
           },
           //not running---//
           'notrunningloancount':{
-            '$sum':1
+            '$sum':'$notrunningloancount'
           },
           
           'notrunningloanpending':{
