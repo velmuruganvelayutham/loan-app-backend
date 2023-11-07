@@ -566,19 +566,7 @@ module.exports.totalLedger = async (req, res) => {
           'countbefore': '$loansub.countbefore',
           //Not running--//
           'daysCountnotrunning': '$notrunningloan.daysCountnotrunning',
-          'receiptpendingweek': {
-            '$subtract': [
-              '$notrunningloan.daysCountnotrunning', {
-                '$divide': [
-                  {
-                    '$ifNull': [
-                      '$notreceipt.collectedamount', 0
-                    ]
-                  }, '$dueamount'
-                ]
-              }
-            ]
-          },
+          'receiptpendingweek':"4",
           'notrunningloan': {
             '$ifNull': [
               '$notrunningloan.totalamountloan', 0
