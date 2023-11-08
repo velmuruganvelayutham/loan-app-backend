@@ -593,7 +593,53 @@ module.exports.totalLedger = async (req, res) => {
             '$ifNull': [
               '$notreceipt.collectedamount', 0
             ]
+          },
+          //Running and not running between dates//
+          'notrunningloanamount': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$receiptbetween.collectedbetween', 0
+                ]
+              }, 
+              'then': 0, 
+              'else': '$totalamount'
+            }
+          }, 
+          'runningloanamount': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$receiptbetween.collectedbetween', 0
+                ]
+              }, 
+              'then': '$totalamount', 
+              'else': 0
+            }
+          }, 
+          'notrunningcount': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$receiptbetween.collectedbetween', 0
+                ]
+              }, 
+              'then': 0, 
+              'else': 1
+            }
+          }, 
+          'runningcount': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$receiptbetween.collectedbetween', 0
+                ]
+              }, 
+              'then': 1, 
+              'else': 0
+            }
           }
+
         }
       }, {
         '$project': {
@@ -611,13 +657,21 @@ module.exports.totalLedger = async (req, res) => {
           'countbefore': 1,
           'pendingamountbefore': {
             '$subtract': [
-              '$totalamountbefore', '$collectedamountbefore'
+              {
+                '$multiply': [
+                  '$dueamount', '$addFields.daysCount'
+                ]
+              }, '$collectedamountbefore'
             ]
           },
 
           'pendingamountafter': {
             '$subtract': [
-              '$totalamount', '$collectedamountafter'
+              {
+                '$multiply': [
+                  '$dueamount', '$addFields.daysCountafter'
+                ]
+              }, '$collectedamountafter'
             ]
           },
           //not running//
@@ -626,7 +680,40 @@ module.exports.totalLedger = async (req, res) => {
            },
            'notrunningloanpending':{
             '$cond': { 'if': { '$gte': [ "$receiptpendingweek", 4 ] }, 'then':{'$subtract':["$notrunningloan","$notreceiptcollected"]}, 'else': 0 }
-           }
+           },
+           //Running and not running between dates//
+           'notrunningloanpending': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$notrunningloanamount', 0
+                ]
+              }, 
+              'then': {
+                '$subtract': [
+                  '$notrunningloanamount', '$collectedamountafter'
+                ]
+              }, 
+              'else': 0
+            }
+          },
+          'runningloanpending': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$runningloanamount', 0
+                ]
+              }, 
+              'then': {
+                '$subtract': [
+                  '$runningloanamount', '$collectedamountafter'
+                ]
+              }, 
+              'else': 0
+            }
+          },
+          'notrunningcount': 1, 
+          'runningcount': 1
         }
       }, {
         '$group': {
@@ -666,6 +753,19 @@ module.exports.totalLedger = async (req, res) => {
           
           'notrunningloanpending':{
             '$sum':'$notrunningloanpending'
+          },
+          //Running and not running between dates//
+          'notrunningloanpending':{
+            '$sum':'$notrunningloanpending'
+          },
+          'runningloanpending':{
+            '$sum':'$runningloanpending'
+          },
+          'notrunningcount':{
+            '$sum':'$notrunningcount'
+          },
+          'runningcount':{
+            '$sum':'$runningcount'
           }
         }
       }, {
