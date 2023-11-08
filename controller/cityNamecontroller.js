@@ -611,21 +611,13 @@ module.exports.totalLedger = async (req, res) => {
           'countbefore': 1,
           'pendingamountbefore': {
             '$subtract': [
-              {
-                '$multiply': [
-                  '$dueamount', '$addFields.daysCount'
-                ]
-              }, '$collectedamountbefore'
+              '$totalamountbefore', '$collectedamountbefore'
             ]
           },
 
           'pendingamountafter': {
             '$subtract': [
-              {
-                '$multiply': [
-                  '$dueamount', '$addFields.daysCountafter'
-                ]
-              }, '$collectedamountafter'
+              '$totalamount', '$collectedamountafter'
             ]
           },
           //not running//
