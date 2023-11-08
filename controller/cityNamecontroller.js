@@ -730,7 +730,6 @@ module.exports.totalLedger = async (req, res) => {
           'collectedmore':1,
           'notrunningloancount':1,
           'notrunningloanpending':1,
-          'murugeswari':'murugeswari',
           'linename': '$linesub.linename',
           'linemanname': '$linemansub.linemanname'
         }
