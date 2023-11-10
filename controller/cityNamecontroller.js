@@ -391,7 +391,7 @@ module.exports.totalLedger = async (req, res) => {
                       ]
                     }, {
                       '$lte': [
-                        '$startdate', new Date('Mon, 06 Nov 2023 00:00:00 GMT')
+                        '$startdate', new Date(req.query['notrundate'])
                       ]
                     }
                   ]
@@ -419,7 +419,7 @@ module.exports.totalLedger = async (req, res) => {
                         '$divide': [
                           {
                             '$subtract': [
-                              new Date('Mon, 06 Nov 2023 00:00:00 GMT'), '$$startdate'
+                              new Date(req.query['notrundate']), '$$startdate'
                             ]
                           }, 86400000 * 7
                         ]
@@ -450,7 +450,7 @@ module.exports.totalLedger = async (req, res) => {
                       ]
                     }, {
                       '$lte': [
-                        '$receiptdate', new Date('Mon, 06 Nov 2023 00:00:00 GMT')
+                        '$receiptdate', new Date(req.query['notrundate'])
                       ]
                     }
                   ]
