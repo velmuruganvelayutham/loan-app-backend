@@ -40,6 +40,11 @@ module.exports.getCustomerWithCity = async (req, res) => {
     },
     {
       $unwind: "$city_id"
+    },
+    {
+      '$sort': {
+        'customer': 1
+      }
     }
   ]);
   res.send(resview);
