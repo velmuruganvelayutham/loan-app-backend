@@ -43,7 +43,7 @@ module.exports.getCustomerWithCity = async (req, res) => {
     },
     {
       '$sort': {
-        'customer': 1,'mobileno':1
+        'customer': 1,'mobileno':1,'cityname':1
       }
     }
   ]);
