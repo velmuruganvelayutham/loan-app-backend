@@ -146,16 +146,24 @@ module.exports.saveLoan = async (req, res) => {
 }
 
 //update Loan Number//
-module.exports.updateLoan=(req,res)=>{
-loanModel.findOneAndUpdate({loannumber:req.body.oldloanno},{loannumber:req.body.newloanno}
+module.exports.updateLoan=async(req,res)=>{
+await loanModel.findOneAndUpdate({loannumber:req.body.oldloanno},{loannumber:req.body.newloanno}
 ).then(() => 
-//res.send("Updated Successfully")
-console.log("Saved SuccessFully")
-)
-    .catch((err) => {
-      console.log(err);
-      res.send({ error: err, msg: "somthing went wrong" })
-    })
+console.log("Updated SuccessFully")
+).catch((err) => {
+    console.log(err);
+    res.send({ error: err, msg: "somthing went wrong" })
+  })
+
+  //receipt section//
+  await receiptModel.updateMany({loannumber:req.body.oldloanno},{loannumber:req.body.newloanno}
+  ).then(()=>
+  res.send("Updated Successfully")
+  ).catch((err) => {
+    console.log(err);
+    res.send({ error: err, msg: "somthing went wrong" })
+  })
+
 }
 
 
