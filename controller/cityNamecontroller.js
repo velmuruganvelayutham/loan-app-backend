@@ -723,7 +723,7 @@ module.exports.totalLedger = async (req, res) => {
           },
           'totalamountbefore':
             { '$sum': "$totalamountbefore" },
-          'countbefore': { '$sum': "$countbefore" },
+          'countbefore': { '$sum': 1 },
 
           'pendingbefore': {
             '$sum': '$pendingamountbefore'
