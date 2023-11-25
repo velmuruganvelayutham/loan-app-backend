@@ -160,7 +160,7 @@ module.exports.totalLedger = async (req, res) => {
                         '$loannumber', '$$loannumber'
                       ]
                     }, {
-                      '$lte': [
+                      '$lt': [
                         '$receiptdate', new Date(req.query['fromdate'])
                       ]
                     }
