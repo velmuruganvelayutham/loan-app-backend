@@ -114,7 +114,7 @@ module.exports.totalLedger = async (req, res) => {
                       ]
                     },
                     {
-                      '$lte': [
+                      '$lt': [
                         '$startdate', new Date(req.query['fromdate'])
                       ]
                     }
