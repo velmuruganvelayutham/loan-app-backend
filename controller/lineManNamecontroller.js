@@ -147,8 +147,7 @@ module.exports.saveLoan = async (req, res) => {
 
 //update Loan Number//
 module.exports.updateLoan=(req,res)=>{
-
-loanModel.findByIdAndUpdate(req.body.oldloanno,{loannumber:req.body.newloanno}
+loanModel.findOneAndUpdate({loannumner:req.body.oldloanno},{loannumber:req.body.newloanno}
 ).then(() => res.send("Updated Successfully"))
     .catch((err) => {
       console.log(err);
