@@ -774,9 +774,7 @@ module.exports.totalLedger = async (req, res) => {
             '$mergeObjects': [
               {
                 'lineno': '$_id.lineno',
-                'lineman_id': '$_id.lineman_id',
-                'totalamountbefore': '$_id.totalamountbefore',
-                'countbefore': '$_id.countbefore'
+                'lineman_id': '$_id.lineman_id'
               }, '$$ROOT'
             ]
           }
