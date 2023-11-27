@@ -359,7 +359,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                           }, 86400000 * 7
                         ]
                       }
-                    }, 1
+                    },
                   ]
                 }
               }
