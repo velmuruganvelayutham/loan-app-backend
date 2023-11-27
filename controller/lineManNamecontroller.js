@@ -312,7 +312,63 @@ module.exports.getCheckingDetails = async (req, res) => {
           ], 
           'as': 'receipt'
         }
-      }, {
+      },
+      {
+        '$lookup': {
+          'from': 'receipttables', 
+          'let': {
+            'loannumber': '$loannumber',
+            'startdate':'startdate'
+          }, 
+          'pipeline': [
+            {
+              '$match': {
+                '$expr': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$loannumber', '$$loannumber'
+                      ]
+                    },{
+                      '$lt': [
+                        '$receiptdate', new Date(req.query['fromdate'])
+                      ]
+                    }
+                  ]
+                }
+              }
+            }, {
+              '$group': {
+                '_id': '$loannumber', 
+                'collectedbefore': {
+                  '$sum': '$collectedamount'
+                }
+              }
+            },
+            {
+              '$addFields': {
+                'daysCountbefore': {
+                  '$add': [
+                    {
+                      '$round': {
+                        '$divide': [
+                          {
+                            '$subtract': [
+                              new Date(req.query['fromdate']), '$$startdate'
+                            ]
+                          }, 86400000 * 7
+                        ]
+                      }
+                    }, 1
+                  ]
+                }
+              }
+            }
+          ], 
+          'as': 'receiptbeforedate'
+        }
+      },
+      {
         '$unwind': {
           'path': '$joined', 
           'includeArrayIndex': 'string', 
@@ -324,34 +380,34 @@ module.exports.getCheckingDetails = async (req, res) => {
           'includeArrayIndex': 'string', 
           'preserveNullAndEmptyArrays': true
         }
-      }, {
+      },
+      {
+        '$unwind': {
+          'path': '$receiptbeforedate', 
+          'includeArrayIndex': 'string', 
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+
+      {
         '$project': {
           'loannumber': 1, 
           'startdate': 1, 
           'finisheddate': 1, 
           'addFields': {
-            'daysCount': {
-              '$round': {
-                '$divide': [
-                  {
-                    '$subtract': [
-                      new Date(req.query['todate']), new Date(req.query['fromdate'])
-                    ]
-                  }, 86400000 * 7
-                ]
-              }
-            }, 
-            'daysCountloan': {
-              '$round': {
-                '$divide': [
-                  {
-                    '$subtract': [
-                      new Date(req.query['todate']), '$finisheddate'
-                    ]
-                  }, 86400000 * 7
-                ]
-              }
-            }
+            'receiptpendingweek': {
+              '$subtract': [
+                '$receiptbeforedate.daysCountbefore', {
+                  '$divide': [
+                    {
+                      '$ifNull': [
+                        '$receiptbeforedate.collectedbefore', 0
+                      ]
+                    }, '$dueamount'
+                  ]
+                }
+              ]
+            },
           }, 
           'lineman_id': 1, 
           'linemanname': 1, 
@@ -370,7 +426,8 @@ module.exports.getCheckingDetails = async (req, res) => {
           'mobileno': 1, 
           'relationtype': 1, 
           'collectedtotal':{$ifNull:["$joined.collected",0]} ,
-          'weekcount':1
+          'weekcount':1,
+          'collectedamountbefore':{$ifNull:["$receiptbeforedate.collectedbefore",0]}
         }
       },
       {
