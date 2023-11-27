@@ -318,7 +318,7 @@ module.exports.getCheckingDetails = async (req, res) => {
           'from': 'receipttables', 
           'let': {
             'loannumber': '$loannumber',
-            'startdate':'startdate'
+            'startdate':'$startdate'
           }, 
           'pipeline': [
             {
