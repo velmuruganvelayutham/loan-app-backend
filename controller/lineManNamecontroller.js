@@ -515,7 +515,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
 
 //company
 module.exports.getCompany=async(req,res)=>{
-  const company=await companyModel.find({})
+  const company=await companyModel.find()
   res.send(company)
 }
 
