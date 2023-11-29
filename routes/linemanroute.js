@@ -23,5 +23,5 @@ router.get("/loan/checkingdetails",getCheckingDetails)
 //previousweekcollection//
 router.get("/loan/previousweekdetails",getPreviousweekDetails)
 //companyname//
-router.get("company/get",getCompany);
+router.get("loan/company/get",getCompany);
 module.exports=router
