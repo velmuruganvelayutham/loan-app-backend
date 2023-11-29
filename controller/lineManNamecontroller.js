@@ -94,7 +94,7 @@ module.exports.saveLoan = async (req, res) => {
     loannumber: req.body.loanno,
     customer_id: req.body.customer_id,
     lineman_id: req.body.lineman_id,
-    city_id:req.body.city_id,
+    city_id: req.body.city_id,
     weekno: req.body.weekno,
     bookno: req.body.bookno,
     lineno: req.body.lineno,
@@ -146,19 +146,19 @@ module.exports.saveLoan = async (req, res) => {
 }
 
 //update Loan Number//
-module.exports.updateLoan=async(req,res)=>{
-await loanModel.findOneAndUpdate({loannumber:req.body.oldloanno},{loannumber:req.body.newloanno}
-).then(() => 
-console.log("Updated SuccessFully")
-).catch((err) => {
+module.exports.updateLoan = async (req, res) => {
+  await loanModel.findOneAndUpdate({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno }
+  ).then(() =>
+    console.log("Updated SuccessFully")
+  ).catch((err) => {
     console.log(err);
     res.send({ error: err, msg: "somthing went wrong" })
   })
 
   //receipt section//
-  await receiptModel.updateMany({loannumber:req.body.oldloanno},{loannumber:req.body.newloanno}
-  ).then(()=>
-  res.send("Updated Successfully")
+  await receiptModel.updateMany({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno }
+  ).then(() =>
+    res.send("Updated Successfully")
   ).catch((err) => {
     console.log(err);
     res.send({ error: err, msg: "somthing went wrong" })
@@ -203,7 +203,7 @@ module.exports.getOldLoanRef = async (req, res) => {
         "work": "$customerdetails.work",
         "mobileno": "$customerdetails.mobileno",
         "cityname": "$customerdetails.cityname",
-        "city":"$customerdetails.city",
+        "city": "$customerdetails.city",
         "lineno": 1,
         "weekno": 1,
         "bookno": 1,
@@ -248,193 +248,193 @@ module.exports.getLedger = async (req, res) => {
 module.exports.getCheckingDetails = async (req, res) => {
   const cityid = req.query['city_id'];
   const checking = await pendingloanModel.aggregate([
-      {
-        '$lookup': {
-          'from': 'receipttables', 
-          'let': {
-            'loannumber': '$loannumber'
-          }, 
-          'pipeline': [
-            {
-              '$match': {
-                '$expr': {
-                  '$eq': [
-                    '$loannumber', '$$loannumber'
-                  ]
-                }
-              }
-            }, {
-              '$group': {
-                '_id': '$loannumber', 
-                'collected': {
-                  '$sum': '$collectedamount'
-                }
+    {
+      '$lookup': {
+        'from': 'receipttables',
+        'let': {
+          'loannumber': '$loannumber'
+        },
+        'pipeline': [
+          {
+            '$match': {
+              '$expr': {
+                '$eq': [
+                  '$loannumber', '$$loannumber'
+                ]
               }
             }
-          ], 
-          'as': 'joined'
-        }
-      }, {
-        '$lookup': {
-          'from': 'receipttables', 
-          'let': {
-            'loannumber': '$loannumber'
-          }, 
-          'pipeline': [
-            {
-              '$match': {
-                '$expr': {
-                  '$and': [
-                    {
-                      '$eq': [
-                        '$loannumber', '$$loannumber'
-                      ]
-                    }, {
-                      '$gt': [
-                        '$receiptdate', new Date(req.query['fromdate'])
-                      ]
-                    }, {
-                      '$lte': [
-                        '$receiptdate', new Date(req.query['todate'])
-                      ]
-                    }
-                  ]
-                }
-              }
-            }, {
-              '$group': {
-                '_id': '$loannumber', 
-                'collected': {
-                  '$sum': '$collectedamount'
-                }
+          }, {
+            '$group': {
+              '_id': '$loannumber',
+              'collected': {
+                '$sum': '$collectedamount'
               }
             }
-          ], 
-          'as': 'receipt'
-        }
-      },
-      {
-        '$lookup': {
-          'from': 'receipttables', 
-          'let': {
-            'loannumber': '$loannumber',
-            'startdate':'$startdate'
-          }, 
-          'pipeline': [
-            {
-              '$match': {
-                '$expr': {
-                  '$and': [
-                    {
-                      '$eq': [
-                        '$loannumber', '$$loannumber'
-                      ]
-                    },{
-                      '$lt': [
-                        '$receiptdate', new Date(req.query['fromdate'])
-                      ]
-                    }
-                  ]
-                }
-              }
-            }, {
-              '$group': {
-                '_id': '$loannumber', 
-                'collectedbefore': {
-                  '$sum': '$collectedamount'
-                }
-              }
-            },
-            {
-              '$addFields': {
-                'daysCountbefore': {
-                  '$add': [
-                    {
-                      '$round': {
-                        '$divide': [
-                          {
-                            '$subtract': [
-                              new Date(req.query['fromdate']), '$$startdate'
-                            ]
-                          }, 86400000 * 7
-                        ]
-                      }
-                    },
-                  ]
-                }
-              }
-            }
-          ], 
-          'as': 'receiptbeforedate'
-        }
-      },
-      {
-        '$unwind': {
-          'path': '$joined', 
-          'includeArrayIndex': 'string', 
-          'preserveNullAndEmptyArrays': true
-        }
-      }, {
-        '$unwind': {
-          'path': '$receipt', 
-          'includeArrayIndex': 'string', 
-          'preserveNullAndEmptyArrays': true
-        }
-      },
-      {
-        '$unwind': {
-          'path': '$receiptbeforedate', 
-          'includeArrayIndex': 'string', 
-          'preserveNullAndEmptyArrays': true
-        }
-      },
-
-      {
-        '$project': {
-          'loannumber': 1, 
-          'startdate': 1, 
-          'finisheddate': 1, 
-          'addFields': {
-            'receiptpendingweek': {
-              '$subtract': [
-                '$receiptbeforedate.daysCountbefore', {
-                  '$divide': [
-                    {
-                      '$ifNull': [
-                        '$receiptbeforedate.collectedbefore', 0
-                      ]
-                    }, '$dueamount'
-                  ]
-                }
-              ]
-            },
-          }, 
-          'lineman_id': 1, 
-          'linemanname': 1, 
-          'lineno':1,
-          'bookno':1,
-          'customer_id': 1, 
-          'customer': 1, 
-          'totalamount': 1, 
-          'dueamount': 1, 
-          'city': 1, 
-          'collectedamountdate': {$ifNull:["$receipt.collected",0]}, 
-          'cityid': 1, 
-          'fathername': 1, 
-          'work': 1, 
-          'address': 1, 
-          'mobileno': 1, 
-          'relationtype': 1, 
-          'collectedtotal':{$ifNull:["$joined.collected",0]} ,
-          'weekcount':1,
-          'collectedamountbefore':{$ifNull:["$receiptbeforedate.collectedbefore",0]}
-        }
-      },
-      {
-        $match:{
-          'cityid':{$eq:cityid}
-        }
+          }
+        ],
+        'as': 'joined'
       }
+    }, {
+      '$lookup': {
+        'from': 'receipttables',
+        'let': {
+          'loannumber': '$loannumber'
+        },
+        'pipeline': [
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': [
+                      '$loannumber', '$$loannumber'
+                    ]
+                  }, {
+                    '$gt': [
+                      '$receiptdate', new Date(req.query['fromdate'])
+                    ]
+                  }, {
+                    '$lte': [
+                      '$receiptdate', new Date(req.query['todate'])
+                    ]
+                  }
+                ]
+              }
+            }
+          }, {
+            '$group': {
+              '_id': '$loannumber',
+              'collected': {
+                '$sum': '$collectedamount'
+              }
+            }
+          }
+        ],
+        'as': 'receipt'
+      }
+    },
+    {
+      '$lookup': {
+        'from': 'receipttables',
+        'let': {
+          'loannumber': '$loannumber',
+          'startdate': '$startdate'
+        },
+        'pipeline': [
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': [
+                      '$loannumber', '$$loannumber'
+                    ]
+                  }, {
+                    '$lt': [
+                      '$receiptdate', new Date(req.query['fromdate'])
+                    ]
+                  }
+                ]
+              }
+            }
+          }, {
+            '$group': {
+              '_id': '$loannumber',
+              'collectedbefore': {
+                '$sum': '$collectedamount'
+              }
+            }
+          },
+          {
+            '$addFields': {
+              'daysCountbefore': {
+                '$add': [
+                  {
+                    '$round': {
+                      '$divide': [
+                        {
+                          '$subtract': [
+                            new Date(req.query['fromdate']), '$$startdate'
+                          ]
+                        }, 86400000 * 7
+                      ]
+                    }
+                  },
+                ]
+              }
+            }
+          }
+        ],
+        'as': 'receiptbeforedate'
+      }
+    },
+    {
+      '$unwind': {
+        'path': '$joined',
+        'includeArrayIndex': 'string',
+        'preserveNullAndEmptyArrays': true
+      }
+    }, {
+      '$unwind': {
+        'path': '$receipt',
+        'includeArrayIndex': 'string',
+        'preserveNullAndEmptyArrays': true
+      }
+    },
+    {
+      '$unwind': {
+        'path': '$receiptbeforedate',
+        'includeArrayIndex': 'string',
+        'preserveNullAndEmptyArrays': true
+      }
+    },
+
+    {
+      '$project': {
+        'loannumber': 1,
+        'startdate': 1,
+        'finisheddate': 1,
+        'addFields': {
+          'receiptpendingweek': {
+            '$subtract': [
+              '$receiptbeforedate.daysCountbefore', {
+                '$divide': [
+                  {
+                    '$ifNull': [
+                      '$receiptbeforedate.collectedbefore', 0
+                    ]
+                  }, '$dueamount'
+                ]
+              }
+            ]
+          },
+        },
+        'lineman_id': 1,
+        'linemanname': 1,
+        'lineno': 1,
+        'bookno': 1,
+        'customer_id': 1,
+        'customer': 1,
+        'totalamount': 1,
+        'dueamount': 1,
+        'city': 1,
+        'collectedamountdate': { $ifNull: ["$receipt.collected", 0] },
+        'cityid': 1,
+        'fathername': 1,
+        'work': 1,
+        'address': 1,
+        'mobileno': 1,
+        'relationtype': 1,
+        'collectedtotal': { $ifNull: ["$joined.collected", 0] },
+        'weekcount': 1,
+        'collectedamountbefore': { $ifNull: ["$receiptbeforedate.collectedbefore", 0] }
+      }
+    },
+    {
+      $match: {
+        'cityid': { $eq: cityid }
+      }
+    }
   ])
 
 
@@ -447,9 +447,73 @@ module.exports.getCheckingDetails = async (req, res) => {
   ])*/
   res.send(checking)
 }
+//previous week collection details//
+module.exports.getPreviousweekDetails = async (req, res) => {
+  const cityid = req.query['city_id'];
+  const previous = await pendingloanModel.aggregate([
+    {
+      '$lookup': {
+        'from': 'receipttables',
+        'let': {
+          'loannumber': '$loannumber'
+        },
+        'pipeline': [
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': [
+                      '$loannumber', '$$loannumber'
+                    ]
+                  }, {
+                    '$eq': [
+                      '$receiptdate', new Date(req.query['fromdate'])
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        'as': 'joined'
+      }
+    }, {
+      '$match': {
+        'joined': {
+          '$size': 1
+        }
+      }
+    }, {
+      '$unwind': {
+        'path': '$joined',
+        'includeArrayIndex': 'string',
+        'preserveNullAndEmptyArrays': true
+      }
+    }, {
+      '$project': {
+        'loannumber': 1,
+        'startdate': 1,
+        'customer': 1,
+        'dueamount': 1,
+        'weekno': '$joined.weekno',
+        'collectedamount': '$joined.collectedamount',
+        'city': 1
+      }
+    },
+    {
+      '$sort': {
+        'loannumber': 1
+      }
+    }
+  ])
+  res.send(previous)
+}
+
+
 //all loan
 module.exports.getLoannumbers = async (req, res) => {
   const cityid = req.query['city_id'];
-  const loannumbers = await pendingloanModel.find({'cityid':{$eq:cityid}})
+  const loannumbers = await pendingloanModel.find({ 'cityid': { $eq: cityid } })
   res.send(loannumbers)
 }
