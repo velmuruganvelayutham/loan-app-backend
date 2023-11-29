@@ -5,6 +5,7 @@ const receiptModel = require("../models/receiptModel")
 const LedgerModel = require("../models/ledgerModel");
 //const lineCheckingModel = require("../models/lineCheckingModel");
 const pendingloanModel = require("../models/loanPendingModelView");
+const companyModel = require("../models/companyModel");
 //all lineman
 module.exports.getLineManNames = async (req, res) => {
   const cityNames = await lineManNameModel.find()
@@ -498,7 +499,9 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'dueamount': 1,
         'weekno': '$joined.weekno',
         'collectedamount': '$joined.collectedamount',
-        'city': 1
+        'city': 1,
+        'bookno':1,
+        'lineno':1
       }
     },
     {
@@ -510,6 +513,11 @@ module.exports.getPreviousweekDetails = async (req, res) => {
   res.send(previous)
 }
 
+//company
+module.exports.getCompany=async(req,res)=>{
+  const company=await companyModel.find({})
+  res.send(company)
+}
 
 //all loan
 module.exports.getLoannumbers = async (req, res) => {
