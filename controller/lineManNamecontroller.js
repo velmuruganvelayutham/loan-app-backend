@@ -505,13 +505,13 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'lineman_id':1
       }
     },
-    /*{
+    {
       '$match': {
           'lineman_id': {
               '$eq': ObjectId('65531a14724b123a6d1b2e25')
           }
       }
-  },*/
+  },
     {
       '$sort': {
         'loannumber': 1
