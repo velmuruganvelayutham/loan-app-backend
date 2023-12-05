@@ -6,6 +6,7 @@ const LedgerModel = require("../models/ledgerModel");
 //const lineCheckingModel = require("../models/lineCheckingModel");
 const pendingloanModel = require("../models/loanPendingModelView");
 const companyModel = require("../models/companyModel");
+const { default: mongoose } = require("mongoose");
 //all lineman
 module.exports.getLineManNames = async (req, res) => {
   const cityNames = await lineManNameModel.find()
@@ -508,7 +509,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
     {
       '$match': {
           'lineman_id': {
-              '$eq': mongoose.Types.ObjectId(cityid)
+              '$eq':mongoose.Types.ObjectId('65531a14724b123a6d1b2e25')
           }
       }
   },
