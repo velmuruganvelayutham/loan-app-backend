@@ -506,7 +506,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
     },
     {
       $match: {
-        'lineman_id': { $eq: cityid }
+        'lineman_id': { $eq: ObjectId(cityid) }
       }
     },
     {
