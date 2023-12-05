@@ -501,7 +501,8 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'collectedamount': '$joined.collectedamount',
         'city': 1,
         'bookno':1,
-        'lineno':1
+        'lineno':1,
+        'lineman_id':1
       }
     },
     {
