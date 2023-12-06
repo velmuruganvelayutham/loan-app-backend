@@ -561,13 +561,13 @@ module.exports.getNewAccountDetails = async (req, res) => {
         }
       }
     },
-    /*{
+    {
       '$match': {
         'lineman': {
           '$eq': cityid
         }
       }
-    },*/
+    },
     {
       '$sort': {
         'loannumber': 1
