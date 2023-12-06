@@ -512,7 +512,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
     {
       '$match': {
         'lineman': {
-          '$eq': '65531a14724b123a6d1b2e25'
+          '$eq': cityid
         }
       }
     },
