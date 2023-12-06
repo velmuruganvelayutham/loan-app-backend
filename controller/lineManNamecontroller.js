@@ -524,6 +524,59 @@ module.exports.getPreviousweekDetails = async (req, res) => {
   ])
   res.send(previous)
 }
+//new account address
+module.exports.getNewAccountDetails = async (req, res) => {
+  const cityid = req.query['city_id'];
+  const newAccount = await pendingloanModel.aggregate([
+    {
+      '$match': {
+        '$and': [
+          {
+            'startdate': {
+              '$gt': new Date(req.query['fromdate'])
+            }
+          }, {
+            'startdate': {
+              '$lte': new Date(req.query['todate'])
+            }
+          }
+        ]
+      }
+    }, {
+      '$project': {
+        'loannumber': 1,
+        'startdate': 1,
+        'customer': 1,
+        'relationtype': 1,
+        'fathername': 1,
+        'mobileno': 1,
+        'address': 1,
+        'city': 1,
+        'givenamount': 1,
+        'totalamount':1,
+        'lineno': 1,
+        'linemanname': 1,
+        'lineman': {
+          '$toString': '$lineman_id'
+        }
+      }
+    },
+    /*{
+      '$match': {
+        'lineman': {
+          '$eq': cityid
+        }
+      }
+    },*/
+    {
+      '$sort': {
+        'loannumber': 1
+      }
+    }
+  ])
+  res.send(newAccount)
+}
+
 
 //company
 module.exports.getCompany = async (req, res) => {

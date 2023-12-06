@@ -2,7 +2,7 @@ const express=require('express')
 const router=express.Router()
 const{getLineManNames,deleteLineManNames,updateLineManNames,saveLineManNames,
     getMaxLoanCode,saveLoan,getLineNames,getOldLoanRef,getLedger,getCheckingDetails,
-    getLoannumbers,updateLoan,getPreviousweekDetails,getCompany}=require("../controller/lineManNamecontroller");
+    getLoannumbers,updateLoan,getPreviousweekDetails,getCompany,getNewAccountDetails}=require("../controller/lineManNamecontroller");
 router.get("/linemancreate/get",getLineManNames);
 router.post("/linemancreate/save",saveLineManNames);
 router.put("/linemancreate/update/:id",updateLineManNames);
@@ -22,6 +22,8 @@ router.get("/ledger/get",getLedger);
 router.get("/loan/checkingdetails",getCheckingDetails)
 //previousweekcollection//
 router.get("/loan/previousweekdetails",getPreviousweekDetails)
+//newAccountDetails
+router.get("/loan/newaccountdetails",getNewAccountDetails)
 //companyname//
 router.get("/company/get",getCompany);
 module.exports=router
