@@ -501,18 +501,21 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'weekno': '$joined.weekno',
         'collectedamount': '$joined.collectedamount',
         'city': 1,
-        'bookno':1,
-        'lineno':1,
-        'lineman_id':1
+        'bookno': 1,
+        'lineno': 1,
+        'lineman_id': 1,
+        'lineman': {
+          '$toString': '$lineman_id'
+        }
       }
     },
     {
       '$match': {
-          'lineman_id': {
-              '$eq':mongoose.Types.ObjectId('65531a14724b123a6d1b2e25')
-          }
+        'lineman': {
+          '$eq': '65531a14724b123a6d1b2e25'
+        }
       }
-  },
+    },
     {
       '$sort': {
         'loannumber': 1
@@ -523,15 +526,15 @@ module.exports.getPreviousweekDetails = async (req, res) => {
 }
 
 //company
-module.exports.getCompany=async(req,res)=>{
-  const company=await companyModel.aggregate([
-    
-      {
-          '$project': {
-              'companyname': 1
-          }
+module.exports.getCompany = async (req, res) => {
+  const company = await companyModel.aggregate([
+
+    {
+      '$project': {
+        'companyname': 1
       }
-  
+    }
+
   ])
   res.send(company)
 }
