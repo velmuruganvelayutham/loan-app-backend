@@ -577,7 +577,161 @@ module.exports.getNewAccountDetails = async (req, res) => {
   res.send(newAccount)
 }
 
-
+//weekendaccountdetails//
+module.exports.getweekEndAccount=async(req,res)=>{
+  const weekend=await pendingloanModel.aggregate([
+    {
+      '$lookup': {
+          'from': 'receipttables', 
+          'let': {
+              'loannumber': '$loannumber'
+          }, 
+          'pipeline': [
+              {
+                  '$match': {
+                      '$expr': {
+                          '$and': [
+                              {
+                                  '$eq': [
+                                      '$loannumber', '$$loannumber'
+                                  ]
+                              }, {
+                                  '$lte': [
+                                      '$receiptdate', new Date(req.query['todate'])
+                                  ]
+                              }
+                          ]
+                      }
+                  }
+              }, {
+                  '$group': {
+                      '_id': '$loannumber', 
+                      'collected': {
+                          '$sum': '$collectedamount'
+                      }
+                  }
+              }
+          ], 
+          'as': 'joined'
+      }
+  }, {
+      '$unwind': {
+          'path': '$joined', 
+          'includeArrayIndex': 'string', 
+          'preserveNullAndEmptyArrays': True
+      }
+  }, {
+      '$lookup': {
+          'from': 'receipttables', 
+          'let': {
+              'loannumber': '$loannumber'
+          }, 
+          'pipeline': [
+              {
+                  '$match': {
+                      '$expr': {
+                          '$and': [
+                              {
+                                  '$eq': [
+                                      '$loannumber', '$$loannumber'
+                                  ]
+                              }, {
+                                  '$lte': [
+                                      '$receiptdate', new Date(req.query['todate'])
+                                  ]
+                              }
+                          ]
+                      }
+                  }
+              }, {
+                  '$sort': {
+                      'receiptdate': -1
+                  }
+              }, {
+                  '$limit': 1
+              }
+          ], 
+          'as': 'lastreceipt'
+      }
+  }, {
+      '$unwind': {
+          'path': '$lastreceipt', 
+          'includeArrayIndex': 'string', 
+          'preserveNullAndEmptyArrays': True
+      }
+  }, {
+      '$project': {
+          'loannumber': 1, 
+          'bookno': 1, 
+          'document': 1, 
+          'customer': 1, 
+          'city': 1, 
+          'lineman_id': 1, 
+          'linemanname': 1, 
+          'finisheddate': 1, 
+          'startdate': 1, 
+          'totalamount': 1, 
+          'lastreceipt': '$lastreceipt.receiptdate', 
+          'collected': {
+              '$ifNull': [
+                  '$joined.collected', 0
+              ]
+          }, 
+          'balance': {
+              '$subtract': [
+                  '$totalamount', {
+                      '$ifNull': [
+                          '$joined.collected', 0
+                      ]
+                  }
+              ]
+          }, 
+          'receiptdateadded': {
+              '$dateAdd': {
+                  'startDate': '$lastreceipt.receiptdate', 
+                  'unit': 'month', 
+                  'amount': 1
+              }
+          }
+      }
+  }, {
+      '$match': {
+          'balance': {
+              '$eq': 0
+          }
+      }
+  }, {
+      '$project': {
+          'loannumber': 1, 
+          'bookno': 1, 
+          'document': 1, 
+          'customer': 1, 
+          'city': 1, 
+          'lineman_id': 1, 
+          'linemanname': 1, 
+          'finisheddate': 1, 
+          'startdate': 1, 
+          'totalamount': 1, 
+          'lastreceipt': 1, 
+          'collected': 1, 
+          'balance': 1, 
+          'receiptdateadded': 1, 
+          'incentivepercentage': {
+              '$cond': {
+                  'if': {
+                      '$lte': [
+                          '$receiptdateadded', '$finisheddate'
+                      ]
+                  }, 
+                  'then': 1, 
+                  'else': 0.5
+              }
+          }
+      }
+  }
+  ])
+  res.send(weekend)
+}
 //company
 module.exports.getCompany = async (req, res) => {
   const company = await companyModel.aggregate([
