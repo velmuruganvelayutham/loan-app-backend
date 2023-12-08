@@ -618,7 +618,7 @@ module.exports.getweekEndAccount=async(req,res)=>{
       '$unwind': {
           'path': '$joined', 
           'includeArrayIndex': 'string', 
-          'preserveNullAndEmptyArrays': True
+          'preserveNullAndEmptyArrays': true
       }
   }, {
       '$lookup': {
