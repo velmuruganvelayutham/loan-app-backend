@@ -579,6 +579,7 @@ module.exports.getNewAccountDetails = async (req, res) => {
 
 //weekendaccountdetails//
 module.exports.getweekEndAccount=async(req,res)=>{
+  const cityid = req.query['city_id'];
   const weekend=await pendingloanModel.aggregate([
     {
       '$lookup': {
@@ -667,10 +668,14 @@ module.exports.getweekEndAccount=async(req,res)=>{
           'customer': 1, 
           'city': 1, 
           'lineman_id': 1, 
+          'lineman': {
+            '$toString': '$lineman_id'
+          },
           'linemanname': 1, 
           'finisheddate': 1, 
           'startdate': 1, 
-          'totalamount': 1, 
+          'totalamount': 1,
+          'lineno':1, 
           'lastreceipt': '$lastreceipt.receiptdate', 
           'collected': {
               '$ifNull': [
@@ -708,10 +713,12 @@ module.exports.getweekEndAccount=async(req,res)=>{
           'customer': 1, 
           'city': 1, 
           'lineman_id': 1, 
+          'lineman':1,
           'linemanname': 1, 
           'finisheddate': 1, 
           'startdate': 1, 
           'totalamount': 1, 
+          'lineno':1,
           'lastreceipt': 1, 
           'collected': 1, 
           'balance': 1, 
@@ -728,7 +735,14 @@ module.exports.getweekEndAccount=async(req,res)=>{
               }
           }
       }
-  }
+  },
+  {
+    '$match': {
+      'lineman': {
+        '$eq': cityid
+      }
+    }
+  },
   ])
   res.send(weekend)
 }
