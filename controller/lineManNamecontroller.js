@@ -657,7 +657,7 @@ module.exports.getweekEndAccount=async(req,res)=>{
       '$unwind': {
           'path': '$lastreceipt', 
           'includeArrayIndex': 'string', 
-          'preserveNullAndEmptyArrays': True
+          'preserveNullAndEmptyArrays': true
       }
   }, {
       '$project': {
