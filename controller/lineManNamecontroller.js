@@ -810,6 +810,7 @@ module.exports.getCurrentWeekGiven=async(req,res)=>{
     }
   },
   ])
+  res.send(currentweek);
 }
 
 //company
