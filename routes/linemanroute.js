@@ -28,7 +28,7 @@ router.get("/loan/newaccountdetails",getNewAccountDetails)
 //weekendaccountsdetails/
 router.get("/loan/weekendaccountdetails",getweekEndAccount)
 //currentweekgivenamount/
-rounter.get("/loan/currentweekgivenamount",getCurrentWeekGiven);
+router.get("/loan/currentweekgivenamount",getCurrentWeekGiven);
 //companyname//
 router.get("/company/get",getCompany);
 module.exports=router
