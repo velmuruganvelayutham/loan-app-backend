@@ -762,6 +762,56 @@ module.exports.getweekEndAccount = async (req, res) => {
   ])
   res.send(weekend)
 }
+//currentweekgivenmoneyaccountdetails//
+module.exports.getCurrentWeekGiven=async(req,res)=>{
+  const cityid = req.query['city_id'];
+  const currentweek=await pendingloanModel.aggregate([
+    {
+      '$match': {
+          '$and': [
+              {
+                  'givendate': {
+                      '$gt': new Date(req.query['fromdate'])
+                  }
+              }, {
+                  'givendate': {
+                      '$lte': new Date(req.query['todate'])
+                  }
+              }
+          ]
+      }
+  }, {
+      '$project': {
+          'loannumber': 1, 
+          'startdate': 1, 
+          'givendate': 1, 
+          'finisheddate': 1, 
+          'customer': 1, 
+          'bookno': 1, 
+          'city': 1, 
+          'givenamount': 1, 
+          'documentamount': 1, 
+          'interestamount': 1, 
+          'totalamount': 1, 
+          'weekcount': 1, 
+          'dueamount': 1, 
+          'lineno': 1, 
+          'linemanname': 1,
+          'lineman': {
+            '$toString': '$lineman_id'
+          }
+      }
+  },
+  {
+    '$match': {
+      'lineman': {
+        '$eq': cityid
+      }
+    }
+  },
+  ])
+}
+
 //company
 module.exports.getCompany = async (req, res) => {
   const company = await companyModel.aggregate([
