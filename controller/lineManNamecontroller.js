@@ -179,7 +179,8 @@ module.exports.updateLoan = async (req, res) => {
   })
 
   //receipt section//
-  await receiptModel.updateMany({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno,receiptdate:req.body.startdate }
+  await receiptModel.updateMany({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno,
+    receiptdate:req.body.startdate,collectedamount:req.body.paidamount}
   ).then(() =>
     res.send("Updated Successfully")
   ).catch((err) => {
