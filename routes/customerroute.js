@@ -10,7 +10,7 @@ router.delete("/delete/:id",deleteCustomer)
 //receipt section
 router.get("/receipt/get/loanpending",getPendingLoan);
 router.post("/receipt/save/details",saveReceipt);
-router.get("/receipt/get",saveReceipt);
+router.get("/receipt/get",getReceipt);
 //loan details//
 router.get("/loan/getDetails",getLoanDetails)
 module.exports=router
