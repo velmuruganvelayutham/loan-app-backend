@@ -102,6 +102,14 @@ module.exports.deleteCustomer = (req, res) => {
 }
 
 //Receipt Section
+
+//get receiptdetails//
+module.exports.getReceipt=async(req,res)=>{
+  const receipt = await receiptModel.find({'loannumber':req.query['loannumber']})
+  res.send(receipt)
+}
+
+
 //Get Pending Loans//
 module.exports.getPendingLoan = async (req, res) => {
   const cityid = req.query['cityid'];
