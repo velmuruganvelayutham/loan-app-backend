@@ -149,7 +149,28 @@ module.exports.saveLoan = async (req, res) => {
 
 //update Loan Number//
 module.exports.updateLoan = async (req, res) => {
-  await loanModel.findOneAndUpdate({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno }
+  await loanModel.findOneAndUpdate({ loannumber: req.body.oldloanno }, { 
+    loannumber: req.body.newloanno, 
+    customer_id: req.body.customer_id,
+    lineman_id: req.body.lineman_id,
+    city_id: req.body.city_id,
+    weekno: req.body.weekno,
+    bookno: req.body.bookno,
+    lineno: req.body.lineno,
+    document: req.body.document,
+    cheque: req.body.cheque,
+    weekcount: req.body.weekcount,
+    startdate: req.body.startdate,
+    givendate: req.body.givendate,
+    duedate: req.body.duedate,
+    finisheddate: req.body.finisheddate,
+    givenamount: req.body.givenamount,
+    documentamount: req.body.documentamount,
+    interestamount: req.body.interestamount,
+    totalamount: req.body.totalamount,
+    dueamount: req.body.dueamount,
+    paidamount: req.body.paidamount
+  }
   ).then(() =>
     console.log("Updated SuccessFully")
   ).catch((err) => {
@@ -158,7 +179,7 @@ module.exports.updateLoan = async (req, res) => {
   })
 
   //receipt section//
-  await receiptModel.updateMany({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno }
+  await receiptModel.updateMany({ loannumber: req.body.oldloanno }, { loannumber: req.body.newloanno,receiptdate:req.body.startdate }
   ).then(() =>
     res.send("Updated Successfully")
   ).catch((err) => {
