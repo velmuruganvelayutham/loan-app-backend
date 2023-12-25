@@ -544,6 +544,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'weekno': '$joined.weekno',
         'collectedamount': '$joined.collectedamount',
         'city': 1,
+        'cityid':1,
         'bookno': 1,
         'lineno': 1,
         'lineman_id': 1,
@@ -554,7 +555,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
     },
     {
       '$match': {
-        'lineman': {
+        'cityid': {
           '$eq': cityid
         }
       }
