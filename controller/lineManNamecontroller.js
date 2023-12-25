@@ -559,13 +559,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         }
       }
     },
-    {
-      '$match': {
-        'bookno': {
-          '$eq': req.query['bookno']
-        }
-      }
-    },
+    
     {
       '$sort': {
         'loannumber': 1
