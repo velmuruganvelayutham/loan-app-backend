@@ -512,14 +512,27 @@ module.exports.getPreviousweekDetails = async (req, res) => {
                       '$loannumber', '$$loannumber'
                     ]
                   }, {
-                    '$eq': [
+                    '$gte': [
                       '$receiptdate', new Date(req.query['fromdate'])
                     ]
-                  }
+                  },
+                  {
+                    '$lte': [
+                        '$receiptdate', new Date(req.query['todate'])
+                    ]
+                }
                 ]
               }
             }
-          }
+          },
+          {
+            '$group': {
+                '_id': '$loannumber', 
+                'collectedamount': {
+                    '$sum': '$collectedamount'
+                }
+            }
+        }
         ],
         'as': 'joined'
       }
