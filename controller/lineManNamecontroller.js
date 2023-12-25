@@ -293,7 +293,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                       '$loannumber', '$$loannumber'
                     ]
                   }, {
-                    '$gt': [
+                    '$lte': [
                       '$receiptdate', new Date(req.query['todate'])
                     ]
                   }
