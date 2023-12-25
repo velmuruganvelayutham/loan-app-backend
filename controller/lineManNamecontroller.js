@@ -146,6 +146,9 @@ module.exports.saveLoan = async (req, res) => {
 
 
 }
+//delete loan and receipt entry//(Not Finished)
+//module.exports.deleteLoan=asy
+
 
 //update Loan Number//
 module.exports.updateLoan = async (req, res) => {
@@ -284,8 +287,16 @@ module.exports.getCheckingDetails = async (req, res) => {
           {
             '$match': {
               '$expr': {
-                '$eq': [
-                  '$loannumber', '$$loannumber'
+                '$and': [
+                  {
+                    '$eq': [
+                      '$loannumber', '$$loannumber'
+                    ]
+                  }, {
+                    '$gt': [
+                      '$receiptdate', new Date(req.query['todate'])
+                    ]
+                  }
                 ]
               }
             }
