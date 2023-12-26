@@ -806,7 +806,7 @@ module.exports.getweekEndAccount = async (req, res) => {
         '$and': [
           {
             'lastreceipt': {
-              '$gt': new Date(req.query['fromdate'])
+              '$gte': new Date(req.query['fromdate'])
             }
           }, {
             'lastreceipt': {
