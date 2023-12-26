@@ -518,21 +518,21 @@ module.exports.getPreviousweekDetails = async (req, res) => {
                   },
                   {
                     '$lte': [
-                        '$receiptdate', new Date(req.query['todate'])
+                      '$receiptdate', new Date(req.query['todate'])
                     ]
-                }
+                  }
                 ]
               }
             }
           },
           {
             '$group': {
-                '_id': '$loannumber', 
-                'collectedamount': {
-                    '$sum': '$collectedamount'
-                }
+              '_id': '$loannumber',
+              'collectedamount': {
+                '$sum': '$collectedamount'
+              }
             }
-        }
+          }
         ],
         'as': 'joined'
       }
@@ -557,7 +557,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         'weekno': '$joined.weekno',
         'collectedamount': '$joined.collectedamount',
         'city': 1,
-        'cityid':1,
+        'cityid': 1,
         'bookno': 1,
         'lineno': 1,
         'lineman_id': 1,
@@ -573,7 +573,7 @@ module.exports.getPreviousweekDetails = async (req, res) => {
         }
       }
     },
-    
+
     {
       '$sort': {
         'loannumber': 1
@@ -639,22 +639,6 @@ module.exports.getNewAccountDetails = async (req, res) => {
 module.exports.getweekEndAccount = async (req, res) => {
   const cityid = req.query['city_id'];
   const weekend = await pendingloanModel.aggregate([
-    {
-      '$match': {
-        '$and': [
-          {
-            'finisheddate': {
-              '$gt': new Date(req.query['fromdate'])
-            }
-          }, {
-            'finisheddate': {
-              '$lte': new Date(req.query['todate'])
-            }
-          }
-        ]
-      }
-    },
-
     {
       '$lookup': {
         'from': 'receipttables',
@@ -817,6 +801,21 @@ module.exports.getweekEndAccount = async (req, res) => {
         }
       }
     },
+    {
+      '$match': {
+        '$and': [
+          {
+            'lastreceipt': {
+              '$gt': new Date(req.query['fromdate'])
+            }
+          }, {
+            'lastreceipt': {
+              '$lte': new Date(req.query['todate'])
+            }
+          }
+        ]
+      }
+    }
   ])
   res.send(weekend)
 }
