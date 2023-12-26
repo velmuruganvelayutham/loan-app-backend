@@ -746,34 +746,7 @@ module.exports.totalLedger = async (req, res) => {
           'notrunningcountdates': 1,
           'runningcountdates': 1,
           //count after with totalamount zero is finished account/
-          'countafter': {
-            '$sum': {
-                '$cond': {
-                    'if': {
-                        '$eq': [
-                            '$totalamount', 0
-                        ]
-                    }, 
-                    'then': 0, 
-                    'else': 1
-                }
-            }
-        }, 
-        'countfinished': {
-            '$sum': {
-                '$cond': {
-                    'if': {
-                        '$eq': [
-                            '$totalamount', 0
-                        ]
-                    }, 
-                    'then': 1, 
-                    'else': 0
-                }
-            }
-        }
-
-
+          
         }
       },
       {
