@@ -238,7 +238,7 @@ module.exports.totalLedger = async (req, res) => {
                         '$receiptdate', new Date(req.query['todate'])
                       ]
                     }, {
-                      '$gt': [
+                      '$gte': [
                         '$receiptdate', new Date(req.query['fromdate'])
                       ]
                     }
@@ -526,7 +526,7 @@ module.exports.totalLedger = async (req, res) => {
                       }, 86400000 * 7
                     ]
                   }
-                }, 
+                },
               ]
             },
             'daysCountafter': {
@@ -541,7 +541,7 @@ module.exports.totalLedger = async (req, res) => {
                       }, 86400000 * 7
                     ]
                   }
-                }, 
+                },
               ]
             },
             'daysCountbetween': {
@@ -565,7 +565,7 @@ module.exports.totalLedger = async (req, res) => {
               '$loansub.totalamountbefore', 0
             ]
           },
-          'countbefore': {'$ifNull': ['$loansub.countbefore',0]},
+          'countbefore': { '$ifNull': ['$loansub.countbefore', 0] },
           //Not running--//
           'daysCountnotrunning': '$notrunningloan.daysCountnotrunning',
           'receiptpendingweek': {
@@ -648,7 +648,7 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
-          'totalamount': { $subtract: ['$totalamount',"$collectedamountafter"] },
+          'totalamount': { $subtract: ['$totalamount', "$collectedamountafter"] },
           'dueamount': 1,
           'collectedamountbetween': 1,
           'collectedless': 1,
@@ -657,7 +657,7 @@ module.exports.totalLedger = async (req, res) => {
               '$collectedless', '$addFields.daysCountbetween'
             ]
           },
-          'totalamountbefore': { $subtract: ['$totalamountbefore',"$collectedamountbefore"] },
+          'totalamountbefore': { $subtract: ['$totalamountbefore', "$collectedamountbefore"] },
           'countbefore': 1,
           'pendingamountbefore': {
             '$subtract': [
@@ -755,7 +755,7 @@ module.exports.totalLedger = async (req, res) => {
           },
           'totalamountbefore':
             { '$sum': "$totalamountbefore" },
-          'countbefore': { '$sum':"$countbefore" },
+          'countbefore': { '$sum': "$countbefore" },
 
           'pendingbefore': {
             '$sum': '$pendingamountbefore'
@@ -777,16 +777,33 @@ module.exports.totalLedger = async (req, res) => {
           },
           //count after with totalamount zero is finished account/
           'countafter': {
-            '$sum': {'$cond': {
-            'if': {
-              '$eq': [
-                '$totalamount', 0
-              ]
-            },
-            'then':0,
-            'else': 1
-          }}
+            '$sum': {
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$totalamount', 0
+                  ]
+                },
+                'then': 0,
+                'else': 1
+              }
+            }
           },
+          //currently finished accounts//
+          'countfinished': {
+            '$sum': {
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$totalamount', 0
+                  ]
+                },
+                'then': 1,
+                'else': 0
+              }
+            }
+          },
+
           //not running---//
           'notrunningloancount': {
             '$sum': '$notrunningloancount'
@@ -854,6 +871,7 @@ module.exports.totalLedger = async (req, res) => {
           'countbefore': 1,
           'totalafter': 1,
           'countafter': 1,
+          'countfinished': 1,
           'pendingbefore': 1,
           'pendingafter': 1,
           'collectedbetween': 1,
