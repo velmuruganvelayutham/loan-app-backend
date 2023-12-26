@@ -744,19 +744,7 @@ module.exports.totalLedger = async (req, res) => {
           'notrunningloanpendingdates': 1,
           'runningloanpendingdates': 1,
           'notrunningcountdates': 1,
-          'runningcountdates': 1,
-          //count after with totalamount zero is finished account/
-          'countafter': {
-            '$sum': {'$cond': {
-            'if': {
-              '$eq': [
-                '$totalamount', 0
-              ]
-            },
-            'then':0,
-            'else': 1
-          }}
-          },
+          'runningcountdates': 1
         }
       },
       {
@@ -787,8 +775,17 @@ module.exports.totalLedger = async (req, res) => {
           'collectedmore': {
             '$sum': '$collectedmore'
           },
+          //count after with totalamount zero is finished account/
           'countafter': {
-            '$sum': 1
+            '$sum': {'$cond': {
+            'if': {
+              '$eq': [
+                '$totalamount', 0
+              ]
+            },
+            'then':0,
+            'else': 1
+          }}
           },
           //not running---//
           'notrunningloancount': {
