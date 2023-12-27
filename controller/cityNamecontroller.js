@@ -290,7 +290,7 @@ module.exports.totalLedger = async (req, res) => {
                         '$receiptdate', new Date(req.query['todate'])
                       ]
                     }, {
-                      '$gt': [
+                      '$gte': [
                         '$receiptdate', new Date(req.query['fromdate'])
                       ]
                     },
@@ -340,7 +340,7 @@ module.exports.totalLedger = async (req, res) => {
                         '$receiptdate', new Date(req.query['todate'])
                       ]
                     }, {
-                      '$gt': [
+                      '$gte': [
                         '$receiptdate', new Date(req.query['fromdate'])
                       ]
                     }
