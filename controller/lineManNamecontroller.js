@@ -327,7 +327,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                       '$loannumber', '$$loannumber'
                     ]
                   }, {
-                    '$gt': [
+                    '$gte': [
                       '$receiptdate', new Date(req.query['fromdate'])
                     ]
                   }, {
@@ -434,7 +434,17 @@ module.exports.getCheckingDetails = async (req, res) => {
         'addFields': {
           'receiptpendingweek': {
             '$subtract': [
-              '$receiptbeforedate.daysCountbefore', {
+              {
+              '$cond': {
+                'if': {
+                  '$lt': [
+                    '$weekcount', '$receiptbeforedate.daysCountbefore'
+                  ]
+                },
+                'then':"$weekcount" ,
+                'else': '$receiptbeforedate.daysCountbefore'
+              }
+            }, {
                 '$divide': [
                   {
                     '$ifNull': [
