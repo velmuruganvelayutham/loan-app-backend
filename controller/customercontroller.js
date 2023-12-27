@@ -284,7 +284,7 @@ module.exports.getPendingLoanDuplicate = async (req, res) => {
       {
         $match: {
           $and: [
-            { loannumer: { $eq: loanno } },
+            { loannumber: { $eq: loanno } },
             { pending: { $gt: 0 } }
           ]
         }
