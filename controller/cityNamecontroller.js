@@ -755,7 +755,34 @@ module.exports.totalLedger = async (req, res) => {
           },
           'totalamountbefore':
             { '$sum': "$totalamountbefore" },
-          'countbefore': { '$sum': "$countbefore" },
+
+            'countbefore':{'$sum': {
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$totalamountbefore', 0
+                  ]
+                },
+                'then': 0,
+                'else': 1
+              }
+            }},
+
+          //currently finished accounts//
+          'countfinishedbefore': {
+            '$sum': {
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$totalamountbefore', 0
+                  ]
+                },
+                'then': 1,
+                'else': 0
+              }
+            }
+          },
+
 
           'pendingbefore': {
             '$sum': '$pendingamountbefore'
@@ -869,6 +896,7 @@ module.exports.totalLedger = async (req, res) => {
           'lineman_id': 1,
           'totalamountbefore': 1,
           'countbefore': 1,
+          'countfinishedbefore':1,
           'totalafter': 1,
           'countafter': 1,
           'countfinished': 1,
