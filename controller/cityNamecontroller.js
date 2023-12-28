@@ -823,7 +823,17 @@ module.exports.totalLedger = async (req, res) => {
             '$sum': '$collectedless'
           },
           'collectedmore': {
-            '$sum': '$collectedmore'
+            '$sum': {
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$totalamount', 0
+                  ]
+                },
+                'then': 0,
+                'else': '$collectedmore'
+              }
+            }
           },
           //count after with totalamount zero is finished account/
           'countafter': {
