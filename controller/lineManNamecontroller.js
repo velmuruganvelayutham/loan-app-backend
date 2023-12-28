@@ -475,7 +475,18 @@ module.exports.getCheckingDetails = async (req, res) => {
         'collectedtotal': { $ifNull: ["$joined.collected", 0] },
         'weekcount': 1,
         'collectedamountbefore': { $ifNull: ["$receiptbeforedate.collectedbefore", 0] },
-        'balance': { $subtract: ['$totalamount', { $ifNull: ["$joined.collected", 0] }] }
+        'balance': { $subtract: ['$totalamount', { $ifNull: ["$joined.collected", 0] }] },
+        'finisheddatepending':{
+          '$cond': {
+              'if': {
+                  '$gt': [
+                      new Date(req.query['todate']), '$finisheddate'
+                  ]
+              }, 
+              'then': 1, 
+              'else':0
+          }
+      }
       }
     },
     {
