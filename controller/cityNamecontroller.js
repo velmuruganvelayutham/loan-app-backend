@@ -491,6 +491,7 @@ module.exports.totalLedger = async (req, res) => {
           'lineno': 1,
           'totalamount': 1,
           'dueamount': 1,
+          'weekcount':1,
           'collectedamountbefore': {
             '$ifNull': [
               '$receiptbefore.collectedbefore', 0
@@ -650,6 +651,7 @@ module.exports.totalLedger = async (req, res) => {
           'lineno': 1,
           'totalamount': { $subtract: ['$totalamount', "$collectedamountafter"] },
           'dueamount': 1,
+          'weekcount':1,
           'collectedamountbetween': 1,
           'collectedless': 1,
           'collectedmore': {
@@ -663,7 +665,17 @@ module.exports.totalLedger = async (req, res) => {
             '$subtract': [
               {
                 '$multiply': [
-                  '$dueamount', '$addFields.daysCount'
+                  '$dueamount', {
+                    '$cond': {
+                      'if': {
+                        '$lt': [
+                          '$weekcount', '$addFields.daysCount'
+                        ]
+                      },
+                      'then':"$weekcount" ,
+                      'else': '$addFields.daysCount'
+                    }
+                  }
                 ]
               }, '$collectedamountbefore'
             ]
@@ -673,7 +685,17 @@ module.exports.totalLedger = async (req, res) => {
             '$subtract': [
               {
                 '$multiply': [
-                  '$dueamount', '$addFields.daysCountafter'
+                  '$dueamount', {
+                    '$cond': {
+                      'if': {
+                        '$lt': [
+                          '$weekcount', '$addFields.daysCountafter'
+                        ]
+                      },
+                      'then':"$weekcount" ,
+                      'else': '$addFields.daysCountafter'
+                    }
+                  }
                 ]
               }, '$collectedamountafter'
             ]
@@ -727,6 +749,7 @@ module.exports.totalLedger = async (req, res) => {
           'lineno': 1,
           'totalamount': 1,
           'dueamount': 1,
+          'weekcount':1,
           'collectedamountbetween': 1,
           'collectedless': 1,
           'collectedmore': 1,
