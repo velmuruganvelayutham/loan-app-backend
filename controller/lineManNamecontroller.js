@@ -391,7 +391,7 @@ module.exports.getCheckingDetails = async (req, res) => {
                       '$divide': [
                         {
                           '$subtract': [
-                            new Date(req.query['fromdate']), '$$startdate'
+                            new Date(req.query['todate']), '$$startdate'
                           ]
                         }, 86400000 * 7
                       ]
