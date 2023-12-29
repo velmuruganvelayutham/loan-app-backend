@@ -655,9 +655,9 @@ module.exports.totalLedger = async (req, res) => {
           'collectedamountbetween': 1,
           'collectedless': 1,
           'collectedmore': {
-            '$multiply': [
+            '$cond': { 'if': { '$lt': ["$receiptpendingweek", 8] }, 'then':{'$multiply': [
               '$collectedmore', '$addFields.daysCountbetween'
-            ]
+            ]} , 'else': 0 }
           },
           'totalamountbefore': { $subtract: ['$totalamountbefore', "$collectedamountbefore"] },
           'countbefore': 1,
