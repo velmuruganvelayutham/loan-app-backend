@@ -489,6 +489,15 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
+          'checkfinished':{'$cond': {
+            'if': {
+              '$lt': [
+                '$finisheddate', new Date(req.query['todate'])
+              ]
+            },
+            'then':1 ,
+            'else': 0
+          }},
           'totalamount': 1,
           'dueamount': 1,
           'weekcount':1,
@@ -512,6 +521,7 @@ module.exports.totalLedger = async (req, res) => {
               '$receiptless.collectedless', 0
             ]
           },
+
           'collectedmore': { '$ifNull': ["$receiptmore.collectedmore", "$dueamount"] },
           'weekcount': 1,
           'addFields': {
@@ -649,13 +659,26 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
+          'checkfinished':1,
           'totalamount': { $subtract: ['$totalamount', "$collectedamountafter"] },
           'dueamount': 1,
           'weekcount':1,
           'collectedamountbetween': 1,
           'collectedless': 1,
           'collectedmore': {
-            '$cond': { 'if': { '$lt': ["$receiptpendingweek", 8] }, 'then':{'$multiply': [
+            '$cond': { 'if': { '$lt': [{
+              '$subtract': [
+                '$addFields.daysCountafter', {
+                  '$divide': [
+                    {
+                      '$ifNull': [
+                        '$collectedamountafter', 0
+                      ]
+                    }, '$dueamount'
+                  ]
+                }
+              ]
+            }, 8] }, 'then':{'$multiply': [
               '$collectedmore', '$addFields.daysCountbetween'
             ]} , 'else': 0 }
           },
@@ -747,12 +770,19 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
+          'checkfinished':1,
           'totalamount': 1,
           'dueamount': 1,
           'weekcount':1,
           'collectedamountbetween': 1,
           'collectedless': 1,
-          'collectedmore': 1,
+          'collectedmore': {
+            '$cond': { 'if':
+              { '$gt': 
+                ["$pendingamountafter", 0] }, 
+                      'then': "$collectedmore", 
+                      'else': 0 }
+          },
           'totalamountbefore': 1,
           'countbefore': 1,
           'pendingamountbefore': {
@@ -831,10 +861,21 @@ module.exports.totalLedger = async (req, res) => {
                   ]
                 },
                 'then': 0,
-                'else': '$collectedmore'
+                'else':{
+              '$cond': {
+                'if': {
+                  '$eq': [
+                    '$checkfinished', 1
+                  ]
+                },
+                'then': 0,
+                'else':'$collectedmore'
               }
             }
-          },
+              }
+            }
+          }
+          ,
           //count after with totalamount zero is finished account/
           'countafter': {
             '$sum': {
