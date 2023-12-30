@@ -879,7 +879,7 @@ module.exports.getCurrentWeekGiven = async (req, res) => {
         '$and': [
           {
             'givendate': {
-              '$gt': new Date(req.query['fromdate'])
+              '$gte': new Date(req.query['fromdate'])
             }
           }, {
             'givendate': {
