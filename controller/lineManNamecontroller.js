@@ -398,7 +398,22 @@ module.exports.getCheckingDetails = async (req, res) => {
                     }
                   },
                 ]
-              }
+              },
+              'daysCountafter': {
+                '$add': [
+                  {
+                    '$round': {
+                      '$divide': [
+                        {
+                          '$subtract': [
+                            new Date(req.query['todate']), '$$startdate'
+                          ]
+                        }, 86400000 * 7
+                      ]
+                    }
+                  },
+                ]
+              },
             }
           }
         ],
@@ -443,6 +458,29 @@ module.exports.getCheckingDetails = async (req, res) => {
                 },
                 'then':"$weekcount" ,
                 'else': '$receiptbeforedate.daysCountbefore'
+              }
+            }, {
+                '$divide': [
+                  {
+                    '$ifNull': [
+                      '$receiptbeforedate.collectedbefore', 0
+                    ]
+                  }, '$dueamount'
+                ]
+              }
+            ]
+          },
+          'receiptpendingweekafter': {
+            '$subtract': [
+              {
+              '$cond': {
+                'if': {
+                  '$lt': [
+                    '$weekcount', '$receiptbeforedate.daysCountafter'
+                  ]
+                },
+                'then':"$weekcount" ,
+                'else': '$receiptbeforedate.daysCountafter'
               }
             }, {
                 '$divide': [
