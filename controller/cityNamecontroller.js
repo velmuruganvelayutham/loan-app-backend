@@ -671,7 +671,7 @@ module.exports.totalLedger = async (req, res) => {
                   '$collectedless', '$dueamount'
                 ]
               },
-              'then':{$subtract: ['$collectedless', "$dueamount"]} ,
+              'then':'$collectedless' ,
               'else': 0
             }
           } ,
