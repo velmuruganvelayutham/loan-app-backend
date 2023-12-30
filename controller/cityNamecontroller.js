@@ -552,7 +552,7 @@ module.exports.totalLedger = async (req, res) => {
                       }, 86400000 * 7
                     ]
                   }
-                },1
+                },
               ]
             },
             'daysCountbetween': {
