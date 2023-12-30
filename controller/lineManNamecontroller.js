@@ -91,58 +91,50 @@ module.exports.getMaxLoanCode = async (req, res) => {
 }
 //create loan
 module.exports.saveLoan = async (req, res) => {
-
-  const loandetails = new loanModel({
-    loannumber: req.body.loanno,
-    customer_id: req.body.customer_id,
-    lineman_id: req.body.lineman_id,
-    city_id: req.body.city_id,
-    weekno: req.body.weekno,
-    bookno: req.body.bookno,
-    lineno: req.body.lineno,
-    document: req.body.document,
-    cheque: req.body.cheque,
-    weekcount: req.body.weekcount,
-    startdate: req.body.startdate,
-    givendate: req.body.givendate,
-    duedate: req.body.duedate,
-    finisheddate: req.body.finisheddate,
-    givenamount: req.body.givenamount,
-    documentamount: req.body.documentamount,
-    interestamount: req.body.interestamount,
-    totalamount: req.body.totalamount,
-    dueamount: req.body.dueamount,
-    paidamount: req.body.paidamount
-  })
-
-  await loanModel.create(loandetails)
-    .then((data) => {
-      console.log("Saved SuccessFully");
-      ///return res.status(201).send(data)
+  try{
+    const loandetails = new loanModel({
+      loannumber: req.body.loanno,
+      customer_id: req.body.customer_id,
+      lineman_id: req.body.lineman_id,
+      city_id: req.body.city_id,
+      weekno: req.body.weekno,
+      bookno: req.body.bookno,
+      lineno: req.body.lineno,
+      document: req.body.document,
+      cheque: req.body.cheque,
+      weekcount: req.body.weekcount,
+      startdate: req.body.startdate,
+      givendate: req.body.givendate,
+      duedate: req.body.duedate,
+      finisheddate: req.body.finisheddate,
+      givenamount: req.body.givenamount,
+      documentamount: req.body.documentamount,
+      interestamount: req.body.interestamount,
+      totalamount: req.body.totalamount,
+      dueamount: req.body.dueamount,
+      paidamount: req.body.paidamount
     })
-    .catch((err) => {
-      console.log(err);
-      //return res.send({error:err,msg:"somthing went wrong"})
-    })
+    await loanModel.create(loandetails);
 
-  ///receipt section
-  let receiptdetails = new receiptModel({
-    loannumber: req.body.loanno,
-    receiptdate: req.body.startdate,
-    customer_id: req.body.customer_id,
-    weekno: req.body.weekno,
-    collectedamount: req.body.paidamount
-  })
-  await receiptModel.create(receiptdetails)
-    .then((data) => {
-      console.log("Saved SuccessFully");
-      res.status(201).send(data)
+    ///receipt section
+    let receiptdetails = new receiptModel({
+      loannumber: req.body.loanno,
+      receiptdate: req.body.startdate,
+      customer_id: req.body.customer_id,
+      weekno: req.body.weekno,
+      collectedamount: req.body.paidamount
     })
-    .catch((err) => {
-      console.log(err);
-      res.send({ error: err, msg: "somthing went wrong" })
-    })
+    await receiptModel.create(receiptdetails);
+    console.log("Saved SuccessFully");
+    return res.status(201).send(data)
+  }
+  catch(err){
+    console.log(err);
+    return res.send({error:err,msg:"somthing went wrong"})
+  }
+  
 
+  
 
 
 }
