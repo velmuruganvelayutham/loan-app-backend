@@ -510,7 +510,7 @@ module.exports.getCheckingDetails = async (req, res) => {
           '$cond': {
               'if': {
                   '$gt': [
-                      new Date(req.query['todate']), '$finisheddate'
+                      new Date(req.query['fromdate']), '$finisheddate'
                   ]
               }, 
               'then': 1, 
