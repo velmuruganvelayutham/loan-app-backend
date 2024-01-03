@@ -762,12 +762,6 @@ module.exports.totalLedger = async (req, res) => {
         }
       },
       {
-
-        '$match': {
-          'loannumber': 9131
-        }
-      },
-      {
         '$project': {
           'loannumber': 1,
           'lineman_id': 1,
