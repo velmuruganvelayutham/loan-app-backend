@@ -775,9 +775,9 @@ module.exports.totalLedger = async (req, res) => {
           'collectedmore': {
             '$cond': { 'if':
               { '$gte': 
-                ["$pendingamountafter", 0] }, 
+                ["$pendingamountbefore", 0] }, 
                       'then': "$collectedmore", 
-                      'else': "$collectedmore" }
+                      'else': 0 }
           },
           'totalamountbefore': 1,
           'countbefore': 1,
@@ -794,6 +794,12 @@ module.exports.totalLedger = async (req, res) => {
           'runningloanpendingdates': 1,
           'notrunningcountdates': 1,
           'runningcountdates': 1
+        }
+      },
+      {
+
+        '$match': {
+          'loannumber': 9875
         }
       },
       {
