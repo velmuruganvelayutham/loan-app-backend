@@ -492,7 +492,7 @@ module.exports.totalLedger = async (req, res) => {
           'checkfinished':{'$cond': {
             'if': {
               '$lt': [
-                '$finisheddate', new Date(req.query['todate'])
+                '$finisheddate', new Date(req.query['fromdate'])
               ]
             },
             'then':1 ,
