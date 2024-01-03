@@ -761,11 +761,7 @@ module.exports.totalLedger = async (req, res) => {
           'runningcountdates': 1
         }
       },
-      {
-        '$match': {
-          'loannumber': 9573
-        }
-      },
+      
       {
         '$project': {
           'loannumber': 1,
@@ -776,7 +772,15 @@ module.exports.totalLedger = async (req, res) => {
           'dueamount': 1,
           'weekcount':1,
           'collectedamountbetween': 1,
-          'collectedless':{ '$cond': { 'if': { '$gt': ["$pendingamountbefore", 0] }, 'then': "$collectedless", 'else': 0 } },
+          'collectedless':{$switch: {
+            branches: [
+                { case: {$lte: ['$pendingamountbefore', 0]}, then: 0 },
+               { case: {$lt: ['$pendingamountbefore', '$collectedless']}, then: '$pendingamountbefore' },
+               { case: {$gte: ['$pendingamountbefore', '$collectedless']}, then: '$collectedless' } ],
+            default: 0
+            }
+         },
+          
           'collectedmore': {
             '$cond': { 'if':
               { '$gte': 
@@ -859,21 +863,11 @@ module.exports.totalLedger = async (req, res) => {
               '$cond': {
                 'if': {
                   '$eq': [
-                    '$totalamount', 0
-                  ]
-                },
-                'then': 0,
-                'else':{
-              '$cond': {
-                'if': {
-                  '$eq': [
                     '$checkfinished', 1
                   ]
                 },
                 'then': 0,
                 'else':'$collectedless'
-              }
-            }
               }
             }
           },
