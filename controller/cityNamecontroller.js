@@ -854,11 +854,21 @@ module.exports.totalLedger = async (req, res) => {
               '$cond': {
                 'if': {
                   '$eq': [
+                    '$totalamount', 0
+                  ]
+                },
+                'then': 0,
+                'else':{
+              '$cond': {
+                'if': {
+                  '$eq': [
                     '$checkfinished', 1
                   ]
                 },
                 'then': 0,
                 'else':'$collectedless'
+              }
+            }
               }
             }
           },
