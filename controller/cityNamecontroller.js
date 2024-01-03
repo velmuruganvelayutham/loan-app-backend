@@ -777,7 +777,7 @@ module.exports.totalLedger = async (req, res) => {
               { '$gte': 
                 ["$pendingamountafter", 0] }, 
                       'then': "$collectedmore", 
-                      'else': 0 }
+                      'else': '$pendingamountafter' }
           },
           'totalamountbefore': 1,
           'countbefore': 1,
