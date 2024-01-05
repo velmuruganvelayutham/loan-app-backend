@@ -289,6 +289,11 @@ module.exports.totalLedger = async (req, res) => {
                       ]
                     }, {
                       '$lte': [
+                        '$receiptdate', new Date(req.query['todate'])
+                      ]
+                    },
+                    {
+                      '$gte': [
                         '$receiptdate', new Date(req.query['notrundate'])
                       ]
                     }
@@ -296,19 +301,22 @@ module.exports.totalLedger = async (req, res) => {
                 }
               }
             }, {
-              '$sort': {
-                'receiptdate': -1
+              '$group': {
+                '_id': {
+                  'loanumber': '$loannumber'
+                }, 
+                'collectedamount': {
+                  '$sum': '$collectedamount'
+                }
               }
-            }, {
-              '$limit': 1
             }
           ], 
-          'as': 'lastreceipt'
+          'as': 'notreceipt'
         }
       },
       {
         '$unwind': {
-          'path': '$lastreceipt', 
+          'path': '$notreceipt', 
           'includeArrayIndex': 'string', 
           'preserveNullAndEmptyArrays': true
         }
@@ -401,7 +409,7 @@ module.exports.totalLedger = async (req, res) => {
                     '$divide': [
                       {
                         '$subtract': [
-                          new Date(req.query['todate']), '$lastreceipt.receiptdate'
+                          new Date(req.query['todate']), new Date(req.query['notrundate'])
                         ]
                       }, 86400000 * 7
                     ]
@@ -417,7 +425,7 @@ module.exports.totalLedger = async (req, res) => {
           },
           'countbefore': { '$ifNull': ['$loansub.countbefore', 0] },
           //Not running--//
-          
+          'collectedamountnotrunning':{$ifNull:["$notreceipt.collectedamount",0]},
           //Running and not running between dates//
           'notrunningloanamountdates': {
             '$cond': {
@@ -517,7 +525,7 @@ module.exports.totalLedger = async (req, res) => {
             ]
           },
           //not running//
-          'loanlastactivedate': 1,
+          'collectedamountnotrunning':1,
           'notrunningcounts': '$addFields.daysCountnotrunning',
           
           //Running and not running between dates//
@@ -586,8 +594,8 @@ module.exports.totalLedger = async (req, res) => {
                   'then': 0
                 }, {
                   'case': {
-                    '$gt': [
-                      '$notrunningcounts', 4
+                    '$lte': [
+                      '$collectedamountnotrunning', 0
                     ]
                   }, 
                   'then': 1
@@ -608,8 +616,8 @@ module.exports.totalLedger = async (req, res) => {
                   'then': 0
                 }, {
                   'case': {
-                    '$gt': [
-                      '$notrunningcounts', 4
+                    '$lt': [
+                      '$collectedamountnotrunning', 0
                     ]
                   }, 
                   'then': {
