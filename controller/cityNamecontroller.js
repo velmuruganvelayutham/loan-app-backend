@@ -616,7 +616,7 @@ module.exports.totalLedger = async (req, res) => {
                   'then': 0
                 }, {
                   'case': {
-                    '$lt': [
+                    '$lte': [
                       '$collectedamountnotrunning', 0
                     ]
                   }, 
