@@ -274,15 +274,15 @@ module.exports.totalLedger = async (req, res) => {
           'preserveNullAndEmptyArrays': true
         }
       },
-      
+
       //Not Running---//
-    
+
       {
         '$lookup': {
-          'from': 'receipttables', 
+          'from': 'receipttables',
           'let': {
             'loannumber': '$loannumber'
-          }, 
+          },
           'pipeline': [
             {
               '$match': {
@@ -309,20 +309,60 @@ module.exports.totalLedger = async (req, res) => {
               '$group': {
                 '_id': {
                   'loanumber': '$loannumber'
-                }, 
+                },
                 'collectedamount': {
                   '$sum': '$collectedamount'
                 }
               }
             }
-          ], 
+          ],
           'as': 'notreceipt'
         }
       },
       {
         '$unwind': {
-          'path': '$notreceipt', 
-          'includeArrayIndex': 'string', 
+          'path': '$notreceipt',
+          'includeArrayIndex': 'string',
+          'preserveNullAndEmptyArrays': true
+        }
+      },
+      {
+        '$lookup': {
+          'from': 'receipttables',
+          'let': {
+            'loannumber': '$loannumber'
+          },
+          'pipeline': [
+            {
+              '$match': {
+                '$expr': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$loannumber', '$$loannumber'
+                      ]
+                    }, {
+                      '$lt': [
+                        '$receiptdate', new Date(req.query['fromdate'])
+                      ]
+                    }
+                  ]
+                }
+              }
+            }, {
+              '$sort': {
+                'receiptdate': -1
+              }
+            }, {
+              '$limit': 1
+            }
+          ],
+          'as': 'lastreceipt'
+        }
+      }, {
+        '$unwind': {
+          'path': '$lastreceipt',
+          'includeArrayIndex': 'string',
           'preserveNullAndEmptyArrays': true
         }
       },
@@ -333,18 +373,20 @@ module.exports.totalLedger = async (req, res) => {
           'lineman_id': 1,
           'lineno': 1,
           'loanlastactivedate': '$lastreceipt.receiptdate',
-          'checkfinished':{'$cond': {
-            'if': {
-              '$lt': [
-                '$finisheddate', new Date(req.query['fromdate'])
-              ]
-            },
-            'then':1 ,
-            'else': 0
-          }},
+          'checkfinished': {
+            '$cond': {
+              'if': {
+                '$lt': [
+                  '$finisheddate', new Date(req.query['fromdate'])
+                ]
+              },
+              'then': 1,
+              'else': 0
+            }
+          },
           'totalamount': 1,
           'dueamount': 1,
-          'weekcount':1,
+          'weekcount': 1,
           'collectedamountbefore': {
             '$ifNull': [
               '$receiptbefore.collectedbefore', 0
@@ -421,6 +463,21 @@ module.exports.totalLedger = async (req, res) => {
                   }
                 }
               ]
+            },
+            'daysCountnotrunningdates': {
+              '$add': [
+                {
+                  '$round': {
+                    '$divide': [
+                      {
+                        '$subtract': [
+                          new Date(req.query['fromdate']), '$lastreceipt.receiptdate'
+                        ]
+                      }, 86400000 * 7
+                    ]
+                  }
+                }
+              ]
             }
           },
           'totalamountbefore': {
@@ -430,52 +487,9 @@ module.exports.totalLedger = async (req, res) => {
           },
           'countbefore': { '$ifNull': ['$loansub.countbefore', 0] },
           //Not running--//
-          'collectedamountnotrunning':{$ifNull:["$notreceipt.collectedamount",0]},
+          'collectedamountnotrunning': { $ifNull: ["$notreceipt.collectedamount", 0] },
           //Running and not running between dates//
-          'notrunningloanamountdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$receiptbetween.collectedbetween', 0
-                ]
-              },
-              'then': 0,
-              'else': '$totalamount'
-            }
-          },
-          'runningloanamountdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$receiptbetween.collectedbetween', 0
-                ]
-              },
-              'then': '$totalamount',
-              'else': 0
-            }
-          },
-          'notrunningcountdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$receiptbetween.collectedbetween', 0
-                ]
-              },
-              'then': 0,
-              'else': 1
-            }
-          },
-          'runningcountdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$receiptbetween.collectedbetween', 0
-                ]
-              },
-              'then': 1,
-              'else': 0
-            }
-          }
+          'loanlastactivedate': '$lastreceipt.receiptdate'
 
         }
       }, {
@@ -483,10 +497,11 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
-          'checkfinished':1,
+          'checkfinished': 1,
           'totalamount': { $subtract: ['$totalamount', "$collectedamountafter"] },
           'dueamount': 1,
-          'weekcount':1,
+          'weekcount': 1,
+          'daysCountbetween':1,
           'collectedamountbetween': 1,
           'totalamountbefore': { $subtract: ['$totalamountbefore', "$collectedamountbefore"] },
           'countbefore': 1,
@@ -501,7 +516,7 @@ module.exports.totalLedger = async (req, res) => {
                           '$weekcount', '$addFields.daysCount'
                         ]
                       },
-                      'then':"$weekcount" ,
+                      'then': "$weekcount",
                       'else': '$addFields.daysCount'
                     }
                   }
@@ -521,7 +536,7 @@ module.exports.totalLedger = async (req, res) => {
                           '$weekcount', '$addFields.daysCountafter'
                         ]
                       },
-                      'then':"$weekcount" ,
+                      'then': "$weekcount",
                       'else': '$addFields.daysCountafter'
                     }
                   }
@@ -530,54 +545,25 @@ module.exports.totalLedger = async (req, res) => {
             ]
           },
           //not running//
-          'collectedamountnotrunning':1,
+          'collectedamountnotrunning': 1,
           'notrunningcounts': '$addFields.daysCountnotrunning',
-          
+
           //Running and not running between dates//
-          'notrunningloanpendingdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$notrunningloanamountdates', 0
-                ]
-              },
-              'then': {
-                '$subtract': [
-                  '$notrunningloanamountdates', '$collectedamountafter'
-                ]
-              },
-              'else': 0
-            }
-          },
-          'runningloanpendingdates': {
-            '$cond': {
-              'if': {
-                '$gt': [
-                  '$runningloanamountdates', 0
-                ]
-              },
-              'then': {
-                '$subtract': [
-                  '$runningloanamountdates', '$collectedamountafter'
-                ]
-              },
-              'else': 0
-            }
-          },
-          'notrunningcountdates': 1,
-          'runningcountdates': 1
+          'loanlastactivedate': 1,
+          'notrunningcountsdates': '$addFields.daysCountnotrunningdates'
+
         }
       },
-      
+
       {
         '$project': {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
-          'checkfinished':1,
+          'checkfinished': 1,
           'totalamount': 1,
           'dueamount': 1,
-          'weekcount':1,
+          'weekcount': 1,
           'collectedamountbetween': 1,
           'totalamountbefore': 1,
           'countbefore': 1,
@@ -607,13 +593,13 @@ module.exports.totalLedger = async (req, res) => {
                         ]
                       }
                     ]
-                  }, 
+                  },
                   'then': 1
                 }
-              ], 
+              ],
               'default': 0
             }
-          }, 
+          },
           'notrunningloanpending': {
             '$switch': {
               'branches': [
@@ -634,22 +620,134 @@ module.exports.totalLedger = async (req, res) => {
                         ]
                       }
                     ]
-                  }, 
+                  },
                   'then': {
                     '$multiply': [
                       '$notrunningcounts', '$dueamount'
                     ]
                   }
                 }
-              ], 
+              ],
               'default': 0
             }
           },
           //Running and not running between dates//
-          'notrunningloanpendingdates': 1,
-          'runningloanpendingdates': 1,
-          'notrunningcountdates': 1,
-          'runningcountdates': 1
+          'notrunningcountdates': {
+            '$switch': {
+              'branches': [
+                {
+                  'case': {
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$lte': [
+                          '$collectedamountbetween', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcountsdates', 3
+                        ]
+                      }
+                    ]
+                  },
+                  'then': 1
+                }
+              ],
+              'default': 0
+            }
+          },
+          'notrunningloanpendingdates': {
+            '$switch': {
+              'branches': [
+                {
+                  'case': {
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$lte': [
+                          '$collectedamountbetween', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcountsdates', 3
+                        ]
+                      }
+                    ]
+                  },
+                  'then': {
+                    '$multiply': [
+                      {
+                        '$add': [
+                          '$notrunningcountsdates', '$daysCountbetween'
+                        ]
+                      }, '$dueamount'
+                    ]
+                  }
+                }
+              ],
+              'default': 0
+            }
+          },
+          'runningcountdates': {
+            '$switch': {
+              'branches': [
+                {
+                  'case': {
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$gt': [
+                          '$collectedamountbetween', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcountsdates', 4
+                        ]
+                      }
+                    ]
+                  },
+                  'then': 1
+                }
+              ],
+              'default': 0
+            }
+          },
+          'runningloanpendingdates': {
+            '$switch': {
+              'branches': [
+                {
+                  'case': {
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$gt': [
+                          '$collectedamountbetween', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcountsdates', 4
+                        ]
+                      }
+                    ]
+                  },
+                  'then': '$collectedamountbetween'
+                }
+              ],
+              'default': 0
+            }
+          }
         }
       },
       {
@@ -657,15 +755,15 @@ module.exports.totalLedger = async (req, res) => {
           'loannumber': 1,
           'lineman_id': 1,
           'lineno': 1,
-          'checkfinished':1,
+          'checkfinished': 1,
           'totalamount': 1,
           'dueamount': 1,
-          'weekcount':1,
+          'weekcount': 1,
           'collectedamountbetween': 1,
           'totalamountbefore': 1,
           'countbefore': 1,
           'pendingamountbefore': 1,
-          'pendingamountafter':1,
+          'pendingamountafter': 1,
           'collectedmore': {
             '$switch': {
               'branches': [
@@ -674,17 +772,17 @@ module.exports.totalLedger = async (req, res) => {
                     '$gt': [
                       '$pendingamountafter', '$pendingamountbefore'
                     ]
-                  }, 
+                  },
                   'then': {
                     '$subtract': [
                       '$pendingamountafter', '$pendingamountbefore'
                     ]
                   }
                 }
-              ], 
+              ],
               'default': 0
             }
-          }, 
+          },
           'collectedless': {
             '$switch': {
               'branches': [
@@ -693,33 +791,43 @@ module.exports.totalLedger = async (req, res) => {
                     '$gt': [
                       '$pendingamountbefore', '$pendingamountafter'
                     ]
-                  }, 
+                  },
                   'then': {
                     '$subtract': [
                       '$pendingamountbefore', '$pendingamountafter'
                     ]
                   }
                 }
-              ], 
+              ],
               'default': 0
             }
           },
 
           //not running//
-          'notrunningloancount': 1, 
+          'notrunningloancount': 1,
           'notrunningloanpending': {
             '$cond': {
               'if': {
                 '$gt': [
                   '$notrunningloanpending', '$pendingamountafter'
                 ]
-              }, 
-              'then': '$pendingamountafter', 
+              },
+              'then': '$pendingamountafter',
               'else': '$notrunningloanpending'
             }
           },
           //Running and not running between dates//
-          'notrunningloanpendingdates': 1,
+          'notrunningloanpendingdates': {
+            '$cond': {
+              'if': {
+                '$gt': [
+                  '$notrunningloanpendingdates', '$pendingamountafter'
+                ]
+              }, 
+              'then': '$pendingamountafter', 
+              'else': '$notrunningloanpendingdates'
+            }
+          },
           'runningloanpendingdates': 1,
           'notrunningcountdates': 1,
           'runningcountdates': 1
@@ -735,7 +843,8 @@ module.exports.totalLedger = async (req, res) => {
           'totalamountbefore':
             { '$sum': "$totalamountbefore" },
 
-            'countbefore':{'$sum': {
+          'countbefore': {
+            '$sum': {
               '$cond': {
                 'if': {
                   '$eq': [
@@ -745,7 +854,8 @@ module.exports.totalLedger = async (req, res) => {
                 'then': 0,
                 'else': 1
               }
-            }},
+            }
+          },
 
           //currently finished accounts//
           'countfinishedbefore': {
@@ -777,7 +887,7 @@ module.exports.totalLedger = async (req, res) => {
           },
           'collectedmore': {
             '$sum': '$collectedmore'
-          }, 
+          },
           'collectedless': {
             '$sum': '$collectedless'
           },
@@ -875,7 +985,7 @@ module.exports.totalLedger = async (req, res) => {
           'lineman_id': 1,
           'totalamountbefore': 1,
           'countbefore': 1,
-          'countfinishedbefore':1,
+          'countfinishedbefore': 1,
           'totalafter': 1,
           'countafter': 1,
           'countfinished': 1,
