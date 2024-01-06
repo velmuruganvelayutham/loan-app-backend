@@ -587,7 +587,7 @@ module.exports.totalLedger = async (req, res) => {
 
           'pendingamountafter': { '$cond': { 'if': { '$gt': ["$pendingamountafter", 0] }, 'then': "$pendingamountafter", 'else': 0 } },
           //not running//
-          'notrunningloan': {
+          'notrunningloancount': {
             '$switch': {
               'branches': [
                 {
