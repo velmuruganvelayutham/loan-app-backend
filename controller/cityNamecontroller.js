@@ -715,7 +715,7 @@ module.exports.totalLedger = async (req, res) => {
                 ]
               }, 
               'then': '$pendingamountafter', 
-              'else': '$notrunningpending'
+              'else': '$notrunningloanpending'
             }
           },
           //Running and not running between dates//
