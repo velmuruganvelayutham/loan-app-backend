@@ -598,7 +598,7 @@ module.exports.totalLedger = async (req, res) => {
                           '$totalamount', 0
                         ]
                       }, {
-                        '$gt': [
+                        '$lte': [
                           '$collectedamountnotrunning', 0
                         ]
                       }, {
@@ -625,7 +625,7 @@ module.exports.totalLedger = async (req, res) => {
                           '$totalamount', 0
                         ]
                       }, {
-                        '$gt': [
+                        '$lte': [
                           '$collectedamountnotrunning', 0
                         ]
                       }, {
