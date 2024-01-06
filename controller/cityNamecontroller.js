@@ -92,6 +92,11 @@ module.exports.totalLedger = async (req, res) => {
   const Ledger = await loanModel.aggregate(
     [
       {
+        $match: {
+          'startdate': { $lte: new Date(req.query['todate']) }
+        }
+      },
+      {
         '$lookup': {
           'from': 'loantables',
           'let': {
