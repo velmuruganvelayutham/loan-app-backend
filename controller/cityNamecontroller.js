@@ -471,7 +471,11 @@ module.exports.totalLedger = async (req, res) => {
                     '$divide': [
                       {
                         '$subtract': [
-                          new Date(req.query['fromdate']), '$lastreceipt.receiptdate'
+                          {'$dateSubtract': {
+                            'startDate': new Date(req.query['fromdate']), 
+                            'unit': 'week', 
+                            'amount': 1
+                          }}, '$lastreceipt.receiptdate'
                         ]
                       }, 86400000 * 7
                     ]
