@@ -614,7 +614,7 @@ module.exports.totalLedger = async (req, res) => {
               'default': 0
             }
           }, 
-          'notrunningpending': {
+          'notrunningloanpending': {
             '$switch': {
               'branches': [
                 {
