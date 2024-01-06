@@ -501,7 +501,7 @@ module.exports.totalLedger = async (req, res) => {
           'totalamount': { $subtract: ['$totalamount', "$collectedamountafter"] },
           'dueamount': 1,
           'weekcount': 1,
-          'daysCountbetween':1,
+          'daysCountbetween':'$addFields.daysCountbetween',
           'collectedamountbetween': 1,
           'totalamountbefore': { $subtract: ['$totalamountbefore', "$collectedamountbefore"] },
           'countbefore': 1,
