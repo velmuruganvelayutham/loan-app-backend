@@ -587,20 +587,25 @@ module.exports.totalLedger = async (req, res) => {
 
           'pendingamountafter': { '$cond': { 'if': { '$gt': ["$pendingamountafter", 0] }, 'then': "$pendingamountafter", 'else': 0 } },
           //not running//
-          'notrunningloancount': {
+          'notrunningloan': {
             '$switch': {
               'branches': [
                 {
                   'case': {
-                    '$eq': [
-                      '$totalamount', 0
-                    ]
-                  }, 
-                  'then': 0
-                }, {
-                  'case': {
-                    '$lte': [
-                      '$collectedamountnotrunning', 0
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$gt': [
+                          '$collectedamountnotrunning', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcounts', 4
+                        ]
+                      }
                     ]
                   }, 
                   'then': 1
@@ -609,20 +614,25 @@ module.exports.totalLedger = async (req, res) => {
               'default': 0
             }
           }, 
-          'notrunningloanpending': {
+          'notrunningpending': {
             '$switch': {
               'branches': [
                 {
                   'case': {
-                    '$eq': [
-                      '$totalamount', 0
-                    ]
-                  }, 
-                  'then': 0
-                }, {
-                  'case': {
-                    '$lte': [
-                      '$collectedamountnotrunning', 0
+                    '$and': [
+                      {
+                        '$gt': [
+                          '$totalamount', 0
+                        ]
+                      }, {
+                        '$gt': [
+                          '$collectedamountnotrunning', 0
+                        ]
+                      }, {
+                        '$gte': [
+                          '$notrunningcounts', 4
+                        ]
+                      }
                     ]
                   }, 
                   'then': {
@@ -635,7 +645,6 @@ module.exports.totalLedger = async (req, res) => {
               'default': 0
             }
           },
-
           //Running and not running between dates//
           'notrunningloanpendingdates': 1,
           'runningloanpendingdates': 1,
